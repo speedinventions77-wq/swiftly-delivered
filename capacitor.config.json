@@ -1,0 +1,6 @@
+{
+  "appId": "app.shofast.customers",
+  "appName": "ShofastCustomerApp",
+  "webDir": "dist",
+  "bundledWebRuntime": false
+}
