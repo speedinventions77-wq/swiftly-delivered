@@ -9,27 +9,16 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as MerchantRouteImport } from './routes/merchant'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as MerchantIndexRouteImport } from './routes/merchant.index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
-import { Route as MerchantProfileRouteImport } from './routes/merchant.profile'
-import { Route as MerchantProductsRouteImport } from './routes/merchant.products'
-import { Route as MerchantOrdersRouteImport } from './routes/merchant.orders'
-import { Route as MerchantBankRouteImport } from './routes/merchant.bank'
 import { Route as AppTrackRouteImport } from './routes/app.track'
 import { Route as AppStoresRouteImport } from './routes/app.stores'
 import { Route as AppProfileRouteImport } from './routes/app.profile'
 import { Route as AppOrdersRouteImport } from './routes/app.orders'
 import { Route as AppServiceTypeRouteImport } from './routes/app.service.$type'
 
-const MerchantRoute = MerchantRouteImport.update({
-  id: '/merchant',
-  path: '/merchant',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -45,35 +34,10 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const MerchantIndexRoute = MerchantIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => MerchantRoute,
-} as any)
 const AppIndexRoute = AppIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AppRoute,
-} as any)
-const MerchantProfileRoute = MerchantProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
-  getParentRoute: () => MerchantRoute,
-} as any)
-const MerchantProductsRoute = MerchantProductsRouteImport.update({
-  id: '/products',
-  path: '/products',
-  getParentRoute: () => MerchantRoute,
-} as any)
-const MerchantOrdersRoute = MerchantOrdersRouteImport.update({
-  id: '/orders',
-  path: '/orders',
-  getParentRoute: () => MerchantRoute,
-} as any)
-const MerchantBankRoute = MerchantBankRouteImport.update({
-  id: '/bank',
-  path: '/bank',
-  getParentRoute: () => MerchantRoute,
 } as any)
 const AppTrackRoute = AppTrackRouteImport.update({
   id: '/track',
@@ -105,17 +69,11 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
   '/auth': typeof AuthRoute
-  '/merchant': typeof MerchantRouteWithChildren
   '/app/orders': typeof AppOrdersRoute
   '/app/profile': typeof AppProfileRoute
   '/app/stores': typeof AppStoresRoute
   '/app/track': typeof AppTrackRoute
-  '/merchant/bank': typeof MerchantBankRoute
-  '/merchant/orders': typeof MerchantOrdersRoute
-  '/merchant/products': typeof MerchantProductsRoute
-  '/merchant/profile': typeof MerchantProfileRoute
   '/app/': typeof AppIndexRoute
-  '/merchant/': typeof MerchantIndexRoute
   '/app/service/$type': typeof AppServiceTypeRoute
 }
 export interface FileRoutesByTo {
@@ -125,12 +83,7 @@ export interface FileRoutesByTo {
   '/app/profile': typeof AppProfileRoute
   '/app/stores': typeof AppStoresRoute
   '/app/track': typeof AppTrackRoute
-  '/merchant/bank': typeof MerchantBankRoute
-  '/merchant/orders': typeof MerchantOrdersRoute
-  '/merchant/products': typeof MerchantProductsRoute
-  '/merchant/profile': typeof MerchantProfileRoute
   '/app': typeof AppIndexRoute
-  '/merchant': typeof MerchantIndexRoute
   '/app/service/$type': typeof AppServiceTypeRoute
 }
 export interface FileRoutesById {
@@ -138,17 +91,11 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
   '/auth': typeof AuthRoute
-  '/merchant': typeof MerchantRouteWithChildren
   '/app/orders': typeof AppOrdersRoute
   '/app/profile': typeof AppProfileRoute
   '/app/stores': typeof AppStoresRoute
   '/app/track': typeof AppTrackRoute
-  '/merchant/bank': typeof MerchantBankRoute
-  '/merchant/orders': typeof MerchantOrdersRoute
-  '/merchant/products': typeof MerchantProductsRoute
-  '/merchant/profile': typeof MerchantProfileRoute
   '/app/': typeof AppIndexRoute
-  '/merchant/': typeof MerchantIndexRoute
   '/app/service/$type': typeof AppServiceTypeRoute
 }
 export interface FileRouteTypes {
@@ -157,17 +104,11 @@ export interface FileRouteTypes {
     | '/'
     | '/app'
     | '/auth'
-    | '/merchant'
     | '/app/orders'
     | '/app/profile'
     | '/app/stores'
     | '/app/track'
-    | '/merchant/bank'
-    | '/merchant/orders'
-    | '/merchant/products'
-    | '/merchant/profile'
     | '/app/'
-    | '/merchant/'
     | '/app/service/$type'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -177,29 +118,18 @@ export interface FileRouteTypes {
     | '/app/profile'
     | '/app/stores'
     | '/app/track'
-    | '/merchant/bank'
-    | '/merchant/orders'
-    | '/merchant/products'
-    | '/merchant/profile'
     | '/app'
-    | '/merchant'
     | '/app/service/$type'
   id:
     | '__root__'
     | '/'
     | '/app'
     | '/auth'
-    | '/merchant'
     | '/app/orders'
     | '/app/profile'
     | '/app/stores'
     | '/app/track'
-    | '/merchant/bank'
-    | '/merchant/orders'
-    | '/merchant/products'
-    | '/merchant/profile'
     | '/app/'
-    | '/merchant/'
     | '/app/service/$type'
   fileRoutesById: FileRoutesById
 }
@@ -207,18 +137,10 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRoute: typeof AppRouteWithChildren
   AuthRoute: typeof AuthRoute
-  MerchantRoute: typeof MerchantRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/merchant': {
-      id: '/merchant'
-      path: '/merchant'
-      fullPath: '/merchant'
-      preLoaderRoute: typeof MerchantRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -240,47 +162,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/merchant/': {
-      id: '/merchant/'
-      path: '/'
-      fullPath: '/merchant/'
-      preLoaderRoute: typeof MerchantIndexRouteImport
-      parentRoute: typeof MerchantRoute
-    }
     '/app/': {
       id: '/app/'
       path: '/'
       fullPath: '/app/'
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppRoute
-    }
-    '/merchant/profile': {
-      id: '/merchant/profile'
-      path: '/profile'
-      fullPath: '/merchant/profile'
-      preLoaderRoute: typeof MerchantProfileRouteImport
-      parentRoute: typeof MerchantRoute
-    }
-    '/merchant/products': {
-      id: '/merchant/products'
-      path: '/products'
-      fullPath: '/merchant/products'
-      preLoaderRoute: typeof MerchantProductsRouteImport
-      parentRoute: typeof MerchantRoute
-    }
-    '/merchant/orders': {
-      id: '/merchant/orders'
-      path: '/orders'
-      fullPath: '/merchant/orders'
-      preLoaderRoute: typeof MerchantOrdersRouteImport
-      parentRoute: typeof MerchantRoute
-    }
-    '/merchant/bank': {
-      id: '/merchant/bank'
-      path: '/bank'
-      fullPath: '/merchant/bank'
-      preLoaderRoute: typeof MerchantBankRouteImport
-      parentRoute: typeof MerchantRoute
     }
     '/app/track': {
       id: '/app/track'
@@ -340,32 +227,21 @@ const AppRouteChildren: AppRouteChildren = {
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
-interface MerchantRouteChildren {
-  MerchantBankRoute: typeof MerchantBankRoute
-  MerchantOrdersRoute: typeof MerchantOrdersRoute
-  MerchantProductsRoute: typeof MerchantProductsRoute
-  MerchantProfileRoute: typeof MerchantProfileRoute
-  MerchantIndexRoute: typeof MerchantIndexRoute
-}
-
-const MerchantRouteChildren: MerchantRouteChildren = {
-  MerchantBankRoute: MerchantBankRoute,
-  MerchantOrdersRoute: MerchantOrdersRoute,
-  MerchantProductsRoute: MerchantProductsRoute,
-  MerchantProfileRoute: MerchantProfileRoute,
-  MerchantIndexRoute: MerchantIndexRoute,
-}
-
-const MerchantRouteWithChildren = MerchantRoute._addFileChildren(
-  MerchantRouteChildren,
-)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRoute: AppRouteWithChildren,
   AuthRoute: AuthRoute,
-  MerchantRoute: MerchantRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
