@@ -16,6 +16,7 @@ import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AppStoresRouteImport } from './routes/app.stores'
 import { Route as AppProfileRouteImport } from './routes/app.profile'
 import { Route as AppOrdersRouteImport } from './routes/app.orders'
+import { Route as AppTrackIdRouteImport } from './routes/app.track.$id'
 import { Route as AppServiceTypeRouteImport } from './routes/app.service.$type'
 
 const AuthRoute = AuthRouteImport.update({
@@ -53,6 +54,11 @@ const AppOrdersRoute = AppOrdersRouteImport.update({
   path: '/orders',
   getParentRoute: () => AppRoute,
 } as any)
+const AppTrackIdRoute = AppTrackIdRouteImport.update({
+  id: '/track/$id',
+  path: '/track/$id',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppServiceTypeRoute = AppServiceTypeRouteImport.update({
   id: '/service/$type',
   path: '/service/$type',
@@ -68,6 +74,7 @@ export interface FileRoutesByFullPath {
   '/app/stores': typeof AppStoresRoute
   '/app/': typeof AppIndexRoute
   '/app/service/$type': typeof AppServiceTypeRoute
+  '/app/track/$id': typeof AppTrackIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -77,6 +84,7 @@ export interface FileRoutesByTo {
   '/app/stores': typeof AppStoresRoute
   '/app': typeof AppIndexRoute
   '/app/service/$type': typeof AppServiceTypeRoute
+  '/app/track/$id': typeof AppTrackIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -88,6 +96,7 @@ export interface FileRoutesById {
   '/app/stores': typeof AppStoresRoute
   '/app/': typeof AppIndexRoute
   '/app/service/$type': typeof AppServiceTypeRoute
+  '/app/track/$id': typeof AppTrackIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -100,6 +109,7 @@ export interface FileRouteTypes {
     | '/app/stores'
     | '/app/'
     | '/app/service/$type'
+    | '/app/track/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -109,6 +119,7 @@ export interface FileRouteTypes {
     | '/app/stores'
     | '/app'
     | '/app/service/$type'
+    | '/app/track/$id'
   id:
     | '__root__'
     | '/'
@@ -119,6 +130,7 @@ export interface FileRouteTypes {
     | '/app/stores'
     | '/app/'
     | '/app/service/$type'
+    | '/app/track/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -178,6 +190,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppOrdersRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/track/$id': {
+      id: '/app/track/$id'
+      path: '/track/$id'
+      fullPath: '/app/track/$id'
+      preLoaderRoute: typeof AppTrackIdRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/service/$type': {
       id: '/app/service/$type'
       path: '/service/$type'
@@ -194,6 +213,7 @@ interface AppRouteChildren {
   AppStoresRoute: typeof AppStoresRoute
   AppIndexRoute: typeof AppIndexRoute
   AppServiceTypeRoute: typeof AppServiceTypeRoute
+  AppTrackIdRoute: typeof AppTrackIdRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
@@ -202,6 +222,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppStoresRoute: AppStoresRoute,
   AppIndexRoute: AppIndexRoute,
   AppServiceTypeRoute: AppServiceTypeRoute,
+  AppTrackIdRoute: AppTrackIdRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
