@@ -41,10 +41,18 @@ workflows:
           mkdir -p "$FRESH_SDK/platforms"
           python3 scripts/install_android35.py
 
-          # Copy working build-tools / platform-tools from the system SDK
+          # Copy working build-tools / platform-tools / licenses from the system SDK
           cp -r "$ANDROID_HOME/build-tools"    "$FRESH_SDK/" 2>/dev/null || true
           cp -r "$ANDROID_HOME/platform-tools" "$FRESH_SDK/" 2>/dev/null || true
           cp -r "$ANDROID_HOME/cmdline-tools"  "$FRESH_SDK/" 2>/dev/null || true
+          cp -r "$ANDROID_HOME/licenses"       "$FRESH_SDK/" 2>/dev/null || true
+
+          # Accept all licenses in the fresh SDK so Gradle doesn't block on them
+          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          if [ ! -f "$SDKMANAGER" ]; then
+            SDKMANAGER=$(find "$ANDROID_HOME" -name sdkmanager -type f 2>/dev/null | head -1)
+          fi
+          yes | "$SDKMANAGER" --sdk_root="$FRESH_SDK" --licenses > /dev/null 2>&1 || true
 
           echo "android.jar size: $(du -h $FRESH_SDK/platforms/android-35/android.jar)"
 
