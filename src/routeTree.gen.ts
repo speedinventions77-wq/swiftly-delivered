@@ -13,7 +13,6 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
-import { Route as AppTrackRouteImport } from './routes/app.track'
 import { Route as AppStoresRouteImport } from './routes/app.stores'
 import { Route as AppProfileRouteImport } from './routes/app.profile'
 import { Route as AppOrdersRouteImport } from './routes/app.orders'
@@ -37,11 +36,6 @@ const IndexRoute = IndexRouteImport.update({
 const AppIndexRoute = AppIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppTrackRoute = AppTrackRouteImport.update({
-  id: '/track',
-  path: '/track',
   getParentRoute: () => AppRoute,
 } as any)
 const AppStoresRoute = AppStoresRouteImport.update({
@@ -72,7 +66,6 @@ export interface FileRoutesByFullPath {
   '/app/orders': typeof AppOrdersRoute
   '/app/profile': typeof AppProfileRoute
   '/app/stores': typeof AppStoresRoute
-  '/app/track': typeof AppTrackRoute
   '/app/': typeof AppIndexRoute
   '/app/service/$type': typeof AppServiceTypeRoute
 }
@@ -82,7 +75,6 @@ export interface FileRoutesByTo {
   '/app/orders': typeof AppOrdersRoute
   '/app/profile': typeof AppProfileRoute
   '/app/stores': typeof AppStoresRoute
-  '/app/track': typeof AppTrackRoute
   '/app': typeof AppIndexRoute
   '/app/service/$type': typeof AppServiceTypeRoute
 }
@@ -94,7 +86,6 @@ export interface FileRoutesById {
   '/app/orders': typeof AppOrdersRoute
   '/app/profile': typeof AppProfileRoute
   '/app/stores': typeof AppStoresRoute
-  '/app/track': typeof AppTrackRoute
   '/app/': typeof AppIndexRoute
   '/app/service/$type': typeof AppServiceTypeRoute
 }
@@ -107,7 +98,6 @@ export interface FileRouteTypes {
     | '/app/orders'
     | '/app/profile'
     | '/app/stores'
-    | '/app/track'
     | '/app/'
     | '/app/service/$type'
   fileRoutesByTo: FileRoutesByTo
@@ -117,7 +107,6 @@ export interface FileRouteTypes {
     | '/app/orders'
     | '/app/profile'
     | '/app/stores'
-    | '/app/track'
     | '/app'
     | '/app/service/$type'
   id:
@@ -128,7 +117,6 @@ export interface FileRouteTypes {
     | '/app/orders'
     | '/app/profile'
     | '/app/stores'
-    | '/app/track'
     | '/app/'
     | '/app/service/$type'
   fileRoutesById: FileRoutesById
@@ -169,13 +157,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppRoute
     }
-    '/app/track': {
-      id: '/app/track'
-      path: '/track'
-      fullPath: '/app/track'
-      preLoaderRoute: typeof AppTrackRouteImport
-      parentRoute: typeof AppRoute
-    }
     '/app/stores': {
       id: '/app/stores'
       path: '/stores'
@@ -211,7 +192,6 @@ interface AppRouteChildren {
   AppOrdersRoute: typeof AppOrdersRoute
   AppProfileRoute: typeof AppProfileRoute
   AppStoresRoute: typeof AppStoresRoute
-  AppTrackRoute: typeof AppTrackRoute
   AppIndexRoute: typeof AppIndexRoute
   AppServiceTypeRoute: typeof AppServiceTypeRoute
 }
@@ -220,7 +200,6 @@ const AppRouteChildren: AppRouteChildren = {
   AppOrdersRoute: AppOrdersRoute,
   AppProfileRoute: AppProfileRoute,
   AppStoresRoute: AppStoresRoute,
-  AppTrackRoute: AppTrackRoute,
   AppIndexRoute: AppIndexRoute,
   AppServiceTypeRoute: AppServiceTypeRoute,
 }
@@ -235,3 +214,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
