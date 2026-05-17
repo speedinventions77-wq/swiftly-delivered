@@ -36,7 +36,12 @@ workflows:
     scripts:
       - name: Install Android SDK 35
         script: |
-          # sdkmanager is not in PATH on Codemagic mac machines — find it under ANDROID_HOME.
+          # The pre-installed android.jar for platform-35 is corrupt on this
+          # Codemagic machine. Delete it so sdkmanager installs a clean copy.
+          echo "ANDROID_HOME: $ANDROID_HOME"
+          sudo rm -rf "$ANDROID_HOME/platforms/android-35" || true
+          sudo rm -rf "$ANDROID_HOME/build-tools/35.0.0"   || true
+
           SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
           if [ ! -f "$SDKMANAGER" ]; then
             SDKMANAGER=$(find "$ANDROID_HOME" -name sdkmanager -type f 2>/dev/null | head -1)
@@ -44,6 +49,7 @@ workflows:
           echo "Using sdkmanager: $SDKMANAGER"
           yes | "$SDKMANAGER" --licenses > /dev/null 2>&1 || true
           "$SDKMANAGER" "platforms;android-35" "build-tools;35.0.0" "platform-tools"
+          echo "android.jar size: $(du -h $ANDROID_HOME/platforms/android-35/android.jar)"
 
       - name: Install Node dependencies
         script: |
