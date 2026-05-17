@@ -3,7 +3,13 @@ workflows:
     name: Build Android AAB
     max_build_duration: 120
     environment:
-      image: ubuntu-2204
+      node: stable
+      android:
+        components:
+          - build-tools-33.0.0
+          - android-33
+          - platform-tools
+          - emulator
     scripts:
       - name: Install Node dependencies
         script: |
