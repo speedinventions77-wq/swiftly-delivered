@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">ShofastCustomerApp</string>
+    <string name="title_activity_main">ShofastCustomerApp</string>
+    <string name="package_name">app.shofast.customers</string>
+    <string name="custom_url_scheme">app.shofast.customers</string>
+</resources>
