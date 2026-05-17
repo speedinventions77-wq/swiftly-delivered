@@ -1,5 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { SERVICES, STORES, getSession } from "@/lib/store";
+import { SERVICES, STORES } from "@/lib/store";
+import { supabase } from "@/integrations/supabase/client";
+import { useEffect, useState } from "react";
 import { MapPin, Search, Star } from "lucide-react";
 
 export const Route = createFileRoute("/app/")({
@@ -7,7 +9,14 @@ export const Route = createFileRoute("/app/")({
 });
 
 function Home() {
-  const s = getSession();
+  const [name, setName] = useState<string>("");
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      const u = data.user;
+      setName(((u?.user_metadata?.full_name as string) || u?.email?.split("@")[0]) ?? "");
+    });
+  }, []);
+  const s = { name };
   return (
     <div className="px-5 pt-4 safe-top">
       <div className="flex items-center justify-between">
