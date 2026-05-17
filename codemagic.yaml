@@ -9,14 +9,6 @@ workflows:
       node: 22.15.0
       java: 17
 
-      # Explicitly install SDK 35 — without this Codemagic's pre-installed
-      # android.jar for platform-35 can be corrupt/incomplete and aapt2 fails.
-      android:
-        components:
-          - build-tools-35.0.0
-          - android-35
-          - platform-tools
-
       vars:
         PACKAGE_NAME: "app.shofast.customers"
         ANDROID_COMPILE_SDK: "35"
@@ -42,6 +34,13 @@ workflows:
 
     # ─── Scripts ──────────────────────────────────────────────────────────────
     scripts:
+      - name: Install Android SDK 35
+        script: |
+          # Install platform-35 and matching build-tools fresh so aapt2 gets
+          # a clean android.jar (the pre-installed one can be corrupt).
+          yes | sdkmanager --licenses > /dev/null 2>&1 || true
+          sdkmanager "platforms;android-35" "build-tools;35.0.0" "platform-tools"
+
       - name: Install Node dependencies
         script: |
           node --version
