@@ -95,6 +95,21 @@
   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 }
 
+/*
+ * Android / iOS WebView input fix
+ * font-size < 16px triggers auto-zoom on focus which disrupts React controlled
+ * inputs — typed text appears lost. Forcing ≥ 16px prevents the zoom entirely.
+ * touch-action: manipulation stops double-tap delay.
+ * user-select: text ensures the field is selectable / editable inside WebView.
+ */
+input, textarea, select {
+  font-size: 16px !important;
+  -webkit-user-select: text;
+  user-select: text;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
 @keyframes pulse-ring {
   0% { transform: scale(0.6); opacity: 0.8; }
   100% { transform: scale(2.4); opacity: 0; }

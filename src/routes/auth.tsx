@@ -98,8 +98,12 @@ function Field({ label, value, onChange, type = "text", placeholder, required }:
         value={value}
         required={required}
         placeholder={placeholder}
+        autoComplete={type === "password" ? "current-password" : "on"}
+        autoCorrect="off"
+        autoCapitalize={type === "email" ? "none" : "words"}
+        spellCheck={false}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full rounded-xl border border-input bg-card px-4 py-3.5 text-sm outline-none ring-ring focus:ring-2"
+        className="w-full rounded-xl border border-input bg-card px-4 py-3.5 text-base outline-none ring-ring focus:ring-2"
       />
     </label>
   );
