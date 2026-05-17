@@ -1,18 +1,3 @@
-// Mock client-side state. Replace with Lovable Cloud later.
-export type Session = { email: string; name: string } | null;
-
-const KEY = "shofast.session";
-
-export function getSession(): Session {
-  if (typeof window === "undefined") return null;
-  try { return JSON.parse(localStorage.getItem(KEY) || "null"); } catch { return null; }
-}
-export function setSession(s: Session) {
-  if (typeof window === "undefined") return;
-  if (s) localStorage.setItem(KEY, JSON.stringify(s));
-  else localStorage.removeItem(KEY);
-}
-
 export const SERVICES = [
   { id: "food", label: "Food", emoji: "🍔", desc: "Restaurants & meals" },
   { id: "groceries", label: "Groceries", emoji: "🛒", desc: "Daily essentials" },
