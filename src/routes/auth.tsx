@@ -1,12 +1,11 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { setSession, type Role } from "@/lib/store";
+import { setSession } from "@/lib/store";
 import { Logo } from "@/components/Logo";
 import { ArrowLeft } from "lucide-react";
 import { z } from "zod";
 
 const searchSchema = z.object({
-  role: z.enum(["customer", "merchant"]).catch("customer"),
   mode: z.enum(["signin", "signup"]).catch("signin"),
 });
 
@@ -16,7 +15,7 @@ export const Route = createFileRoute("/auth")({
 });
 
 function AuthPage() {
-  const { role, mode } = Route.useSearch();
+  const { mode } = Route.useSearch();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
@@ -24,8 +23,8 @@ function AuthPage() {
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
-    setSession({ email, name: name || email.split("@")[0], role: role as Role });
-    navigate({ to: role === "merchant" ? "/merchant" : "/app" });
+    setSession({ email, name: name || email.split("@")[0] });
+    navigate({ to: "/app" });
   }
 
   return (
@@ -37,18 +36,10 @@ function AuthPage() {
       </div>
 
       <div className="mt-4">
-        <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">{role === "merchant" ? "Merchant" : "Customer"} · {mode === "signup" ? "Create account" : "Welcome back"}</p>
+        <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">{mode === "signup" ? "Create account" : "Welcome back"}</p>
         <h1 className="mt-2 text-3xl font-bold leading-tight">
-          {mode === "signup" ? (role === "merchant" ? "Start selling on Shofast" : "Get anything delivered") : "Sign in to Shofast"}
+          {mode === "signup" ? "Get anything delivered" : "Sign in to Shofast"}
         </h1>
-
-        <div className="mt-5 inline-flex rounded-full bg-secondary p-1 text-sm">
-          {(["customer", "merchant"] as const).map((r) => (
-            <Link key={r} to="/auth" search={{ role: r, mode }} className={`rounded-full px-4 py-1.5 font-medium ${role === r ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}>
-              {r === "customer" ? "Customer" : "Merchant"}
-            </Link>
-          ))}
-        </div>
       </div>
 
       <form onSubmit={submit} className="mt-8 space-y-3">
@@ -64,7 +55,7 @@ function AuthPage() {
 
       <p className="mt-6 text-center text-sm text-muted-foreground">
         {mode === "signup" ? "Already on Shofast?" : "New to Shofast?"}{" "}
-        <Link to="/auth" search={{ role, mode: mode === "signup" ? "signin" : "signup" }} className="font-semibold text-foreground underline-offset-4 hover:underline">
+        <Link to="/auth" search={{ mode: mode === "signup" ? "signin" : "signup" }} className="font-semibold text-foreground underline-offset-4 hover:underline">
           {mode === "signup" ? "Sign in" : "Create account"}
         </Link>
       </p>
