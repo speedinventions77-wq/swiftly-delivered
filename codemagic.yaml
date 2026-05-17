@@ -2,7 +2,6 @@ workflows:
   build_android_aab:
     name: Build Android AAB (Signed Release)
     max_build_duration: 120
-    instance_type: linux_x2
 
     # ─── Environment ──────────────────────────────────────────────────────────
     environment:
@@ -36,15 +35,22 @@ workflows:
     scripts:
       - name: Install Android SDK 35
         script: |
-          echo "ANDROID_HOME: $ANDROID_HOME"
-          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
-          if [ ! -f "$SDKMANAGER" ]; then
-            SDKMANAGER=$(find "$ANDROID_HOME" -name sdkmanager -type f 2>/dev/null | head -1)
-          fi
-          echo "Using sdkmanager: $SDKMANAGER"
-          yes | "$SDKMANAGER" --licenses > /dev/null 2>&1 || true
-          "$SDKMANAGER" "platforms;android-35" "build-tools;35.0.0" "platform-tools"
-          echo "android.jar size: $(du -h $ANDROID_HOME/platforms/android-35/android.jar)"
+          # Download android-35 platform directly from Google CDN (bypasses any
+          # corrupt pre-installed android.jar on the build machine).
+          FRESH_SDK="$HOME/android-sdk-fresh"
+          mkdir -p "$FRESH_SDK/platforms"
+          python3 scripts/install_android35.py
+
+          # Copy working build-tools / platform-tools from the system SDK
+          cp -r "$ANDROID_HOME/build-tools"    "$FRESH_SDK/" 2>/dev/null || true
+          cp -r "$ANDROID_HOME/platform-tools" "$FRESH_SDK/" 2>/dev/null || true
+          cp -r "$ANDROID_HOME/cmdline-tools"  "$FRESH_SDK/" 2>/dev/null || true
+
+          echo "android.jar size: $(du -h $FRESH_SDK/platforms/android-35/android.jar)"
+
+          # Redirect Gradle to the hybrid SDK
+          echo "sdk.dir=$FRESH_SDK" > android/local.properties
+          echo "ANDROID_HOME=$FRESH_SDK" >> $CM_ENV
 
       - name: Install Node dependencies
         script: |
