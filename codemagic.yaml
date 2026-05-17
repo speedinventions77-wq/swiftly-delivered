@@ -11,7 +11,7 @@ workflows:
 
       vars:
         PACKAGE_NAME: "app.shofast.customers"
-        ANDROID_COMPILE_SDK: "33"
+        ANDROID_COMPILE_SDK: "35"
 
         # ── Signing credentials — all embedded, no dashboard setup required ──
         CM_KEY_ALIAS: "shofast-customers"
@@ -58,7 +58,10 @@ workflows:
         script: |
           cd android
           chmod +x gradlew
+          # BUILD_NUMBER is auto-incremented by Codemagic on every build.
+          # It is passed to Gradle as -PbuildNumber so versionCode always rises.
           ./gradlew bundleRelease \
+            -PbuildNumber="$BUILD_NUMBER" \
             -Pandroid.injected.signing.store.file="$CM_KEYSTORE_PATH" \
             -Pandroid.injected.signing.store.password="$CM_KEYSTORE_PASSWORD" \
             -Pandroid.injected.signing.key.alias="$CM_KEY_ALIAS" \

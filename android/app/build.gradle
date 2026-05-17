@@ -8,20 +8,20 @@ android {
         applicationId "app.shofast.customers"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
+
+        // versionCode is driven by Codemagic's BUILD_NUMBER env var so it
+        // auto-increments on every CI build. Falls back to 1 locally.
+        versionCode project.hasProperty('buildNumber') ? project.property('buildNumber').toInteger() : 1
         versionName "1.0"
+
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
-            // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
             ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
 
     signingConfigs {
         release {
-            // CM_KEYSTORE_PATH is written by the "Decode keystore" step in codemagic.yaml.
-            // CM_KEYSTORE_PASSWORD, CM_KEY_ALIAS, CM_KEY_PASSWORD come from the
-            // "android_signing" environment group defined in the Codemagic dashboard.
             def keystorePath = System.getenv("CM_KEYSTORE_PATH")
             if (keystorePath) {
                 storeFile     file(keystorePath)
@@ -34,8 +34,11 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            // R8 shrinking — required by Google Play; also produces mapping.txt
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
             def keystorePath = System.getenv("CM_KEYSTORE_PATH")
             if (keystorePath) {
                 signingConfig signingConfigs.release
@@ -73,5 +76,5 @@ try {
         apply plugin: 'com.google.gms.google-services'
     }
 } catch (Exception e) {
-    logger.info("google-services.json not found, google-services plugin not applied. Push Notifications won't work")
+    logger.info("google-services.json not found, google-services plugin not applied.")
 }
