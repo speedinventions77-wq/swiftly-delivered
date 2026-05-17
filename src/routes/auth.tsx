@@ -1,0 +1,91 @@
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
+import { setSession, type Role } from "@/lib/store";
+import { Logo } from "@/components/Logo";
+import { ArrowLeft } from "lucide-react";
+import { z } from "zod";
+
+const searchSchema = z.object({
+  role: z.enum(["customer", "merchant"]).catch("customer"),
+  mode: z.enum(["signin", "signup"]).catch("signin"),
+});
+
+export const Route = createFileRoute("/auth")({
+  validateSearch: searchSchema,
+  component: AuthPage,
+});
+
+function AuthPage() {
+  const { role, mode } = Route.useSearch();
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [password, setPassword] = useState("");
+
+  function submit(e: React.FormEvent) {
+    e.preventDefault();
+    setSession({ email, name: name || email.split("@")[0], role: role as Role });
+    navigate({ to: role === "merchant" ? "/merchant" : "/app" });
+  }
+
+  return (
+    <div className="mx-auto flex min-h-screen w-full max-w-md flex-col bg-background px-5 safe-top">
+      <div className="flex items-center justify-between py-4">
+        <Link to="/" className="-ml-2 inline-flex h-9 w-9 items-center justify-center rounded-full hover:bg-secondary"><ArrowLeft className="h-5 w-5"/></Link>
+        <Logo />
+        <span className="w-9" />
+      </div>
+
+      <div className="mt-4">
+        <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">{role === "merchant" ? "Merchant" : "Customer"} · {mode === "signup" ? "Create account" : "Welcome back"}</p>
+        <h1 className="mt-2 text-3xl font-bold leading-tight">
+          {mode === "signup" ? (role === "merchant" ? "Start selling on Shofast" : "Get anything delivered") : "Sign in to Shofast"}
+        </h1>
+
+        <div className="mt-5 inline-flex rounded-full bg-secondary p-1 text-sm">
+          {(["customer", "merchant"] as const).map((r) => (
+            <Link key={r} to="/auth" search={{ role: r, mode }} className={`rounded-full px-4 py-1.5 font-medium ${role === r ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}>
+              {r === "customer" ? "Customer" : "Merchant"}
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      <form onSubmit={submit} className="mt-8 space-y-3">
+        {mode === "signup" && (
+          <Field label="Full name" value={name} onChange={setName} placeholder="Ada Lovelace" />
+        )}
+        <Field label="Email" type="email" value={email} onChange={setEmail} placeholder="you@example.com" required />
+        <Field label="Password" type="password" value={password} onChange={setPassword} placeholder="••••••••" required />
+        <button type="submit" className="mt-4 w-full rounded-full bg-primary py-3.5 text-sm font-semibold text-primary-foreground active:scale-[0.99]">
+          {mode === "signup" ? "Create account" : "Sign in"}
+        </button>
+      </form>
+
+      <p className="mt-6 text-center text-sm text-muted-foreground">
+        {mode === "signup" ? "Already on Shofast?" : "New to Shofast?"}{" "}
+        <Link to="/auth" search={{ role, mode: mode === "signup" ? "signin" : "signup" }} className="font-semibold text-foreground underline-offset-4 hover:underline">
+          {mode === "signup" ? "Sign in" : "Create account"}
+        </Link>
+      </p>
+
+      <p className="mt-auto pb-6 pt-10 text-center text-[11px] text-muted-foreground">By continuing you agree to our Terms & Privacy.</p>
+    </div>
+  );
+}
+
+function Field({ label, value, onChange, type = "text", placeholder, required }: { label: string; value: string; onChange: (v: string) => void; type?: string; placeholder?: string; required?: boolean }) {
+  return (
+    <label className="block">
+      <span className="mb-1.5 block text-xs font-medium text-muted-foreground">{label}</span>
+      <input
+        type={type}
+        value={value}
+        required={required}
+        placeholder={placeholder}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full rounded-xl border border-input bg-card px-4 py-3.5 text-sm outline-none ring-ring focus:ring-2"
+      />
+    </label>
+  );
+}
