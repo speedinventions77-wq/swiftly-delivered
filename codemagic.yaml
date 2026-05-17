@@ -36,10 +36,14 @@ workflows:
     scripts:
       - name: Install Android SDK 35
         script: |
-          # Install platform-35 and matching build-tools fresh so aapt2 gets
-          # a clean android.jar (the pre-installed one can be corrupt).
-          yes | sdkmanager --licenses > /dev/null 2>&1 || true
-          sdkmanager "platforms;android-35" "build-tools;35.0.0" "platform-tools"
+          # sdkmanager is not in PATH on Codemagic mac machines — find it under ANDROID_HOME.
+          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          if [ ! -f "$SDKMANAGER" ]; then
+            SDKMANAGER=$(find "$ANDROID_HOME" -name sdkmanager -type f 2>/dev/null | head -1)
+          fi
+          echo "Using sdkmanager: $SDKMANAGER"
+          yes | "$SDKMANAGER" --licenses > /dev/null 2>&1 || true
+          "$SDKMANAGER" "platforms;android-35" "build-tools;35.0.0" "platform-tools"
 
       - name: Install Node dependencies
         script: |
