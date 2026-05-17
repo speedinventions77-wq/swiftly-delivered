@@ -20,6 +20,13 @@ dist-ssr
 .wrangler/
 .dev.vars
 
+# Android signing — never commit the raw keystore binary
+.codemagic/*.keystore
+.codemagic/*.jks
+# The .b64 file is the encoded value you paste into Codemagic env vars
+# You may delete it after pasting; keep out of public repos
+.codemagic/keystore.b64
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

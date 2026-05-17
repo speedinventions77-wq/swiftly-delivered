@@ -3,6 +3,7 @@ apply plugin: 'com.android.application'
 android {
     namespace "app.shofast.customers"
     compileSdkVersion rootProject.ext.compileSdkVersion
+
     defaultConfig {
         applicationId "app.shofast.customers"
         minSdkVersion rootProject.ext.minSdkVersion
@@ -11,21 +12,43 @@ android {
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
-             // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
-             // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
+            // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
             ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+
+    signingConfigs {
+        release {
+            // CM_KEYSTORE_PATH is written by the "Decode keystore" step in codemagic.yaml.
+            // CM_KEYSTORE_PASSWORD, CM_KEY_ALIAS, CM_KEY_PASSWORD come from the
+            // "android_signing" environment group defined in the Codemagic dashboard.
+            def keystorePath = System.getenv("CM_KEYSTORE_PATH")
+            if (keystorePath) {
+                storeFile     file(keystorePath)
+                storePassword System.getenv("CM_KEYSTORE_PASSWORD")
+                keyAlias      System.getenv("CM_KEY_ALIAS")
+                keyPassword   System.getenv("CM_KEY_PASSWORD")
+            }
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            def keystorePath = System.getenv("CM_KEYSTORE_PATH")
+            if (keystorePath) {
+                signingConfig signingConfigs.release
+            }
+        }
+        debug {
+            signingConfig signingConfigs.debug
         }
     }
 }
 
 repositories {
-    flatDir{
+    flatDir {
         dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'
     }
 }
@@ -49,6 +72,6 @@ try {
     if (servicesJSON.text) {
         apply plugin: 'com.google.gms.google-services'
     }
-} catch(Exception e) {
+} catch (Exception e) {
     logger.info("google-services.json not found, google-services plugin not applied. Push Notifications won't work")
 }

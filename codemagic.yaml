@@ -1,29 +1,95 @@
 workflows:
   build_android_aab:
-    name: Build Android AAB
+    name: Build Android AAB (Signed Release)
     max_build_duration: 120
+    instance_type: mac_mini_m2
+
+    # ─── Environment ──────────────────────────────────────────────────────────
     environment:
-      node: stable
-      android:
-        components:
-          - build-tools-33.0.0
-          - android-33
-          - platform-tools
-          - emulator
+      # Node LTS (22.x) — matches engines required by TanStack Start / Miniflare
+      node: 22.15.0
+      java: 17
+
+      # "android_signing" is an environment variable GROUP you create once in the
+      # Codemagic dashboard (Teams → <your team> → Global variables & secrets →
+      # "android_signing" group).  Add these four variables there, marking each
+      # one as "secure" (encrypted at rest):
+      #
+      #   CM_KEYSTORE          → base64 value from .codemagic/keystore.b64
+      #   CM_KEYSTORE_PASSWORD → Sh0fast@Secure2024!
+      #   CM_KEY_ALIAS         → shofast-customers
+      #   CM_KEY_PASSWORD      → Sh0fast@Secure2024!
+      #
+      # Then reference the group here:
+      groups:
+        - android_signing
+
+      vars:
+        # App metadata — safe to keep in plain text
+        PACKAGE_NAME: "app.shofast.customers"
+        # Android SDK version to install (matches variables.gradle compileSdkVersion)
+        ANDROID_COMPILE_SDK: "33"
+
+    # ─── Triggering ───────────────────────────────────────────────────────────
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: "main"
+          include: true
+          source: true
+
+    # ─── Scripts ──────────────────────────────────────────────────────────────
     scripts:
+      # 1. Install JS dependencies
       - name: Install Node dependencies
         script: |
+          node --version
           npm install
+
+      # 2. Build the web bundle that Capacitor wraps
       - name: Build web app
         script: |
           npm run build
+
+      # 3. Add & sync Capacitor Android (idempotent — safe to re-run)
       - name: Prepare Capacitor Android
         script: |
           npx cap add android || true
           npx cap sync android
+
+      # 4. Decode the base64 keystore into a real .jks file and export its path
+      #    so Gradle can pick it up via System.getenv("CM_KEYSTORE_PATH").
+      - name: Decode keystore
+        script: |
+          KEYSTORE_PATH="$CM_BUILD_DIR/shofast-customers.keystore"
+          echo "$CM_KEYSTORE" | base64 --decode > "$KEYSTORE_PATH"
+          # Export for Gradle
+          export CM_KEYSTORE_PATH="$KEYSTORE_PATH"
+          # Persist across steps
+          echo "CM_KEYSTORE_PATH=$KEYSTORE_PATH" >> $CM_ENV
+
+      # 5. Build the signed AAB
       - name: Build AAB
         script: |
           cd android
-          ./gradlew bundleRelease
+          chmod +x gradlew
+          ./gradlew bundleRelease \
+            -Pandroid.injected.signing.store.file="$CM_KEYSTORE_PATH" \
+            -Pandroid.injected.signing.store.password="$CM_KEYSTORE_PASSWORD" \
+            -Pandroid.injected.signing.key.alias="$CM_KEY_ALIAS" \
+            -Pandroid.injected.signing.key.password="$CM_KEY_PASSWORD"
+
+    # ─── Artifacts ────────────────────────────────────────────────────────────
     artifacts:
       - android/app/build/outputs/bundle/release/*.aab
+      - android/app/build/outputs/mapping/release/mapping.txt
+
+    # ─── Notifications ────────────────────────────────────────────────────────
+    publishing:
+      email:
+        recipients:
+          - builds@shofast.app
+        notify:
+          success: true
+          failure: true
