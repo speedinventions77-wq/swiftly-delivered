@@ -36,20 +36,32 @@ workflows:
     scripts:
       - name: Install Android SDK 35
         script: |
-          # The pre-installed android.jar for platform-35 is corrupt on this
-          # Codemagic machine. Delete it so sdkmanager installs a clean copy.
-          echo "ANDROID_HOME: $ANDROID_HOME"
-          sudo rm -rf "$ANDROID_HOME/platforms/android-35" || true
-          sudo rm -rf "$ANDROID_HOME/build-tools/35.0.0"   || true
+          # Strategy: install android-35 into a fresh home directory so we
+          # never touch the corrupt system SDK (no sudo needed).
+          # Gradle reads sdk.dir from local.properties, so we redirect it there.
+          FRESH_SDK="$HOME/android-sdk-fresh"
+          mkdir -p "$FRESH_SDK"
 
+          # Locate sdkmanager binary from the existing system SDK
           SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
           if [ ! -f "$SDKMANAGER" ]; then
             SDKMANAGER=$(find "$ANDROID_HOME" -name sdkmanager -type f 2>/dev/null | head -1)
           fi
           echo "Using sdkmanager: $SDKMANAGER"
-          yes | "$SDKMANAGER" --licenses > /dev/null 2>&1 || true
-          "$SDKMANAGER" "platforms;android-35" "build-tools;35.0.0" "platform-tools"
-          echo "android.jar size: $(du -h $ANDROID_HOME/platforms/android-35/android.jar)"
+
+          # Install clean platform-35 + build-tools into the fresh directory
+          yes | "$SDKMANAGER" --sdk_root="$FRESH_SDK" --licenses > /dev/null 2>&1 || true
+          "$SDKMANAGER" --sdk_root="$FRESH_SDK" \
+            "platforms;android-35" \
+            "build-tools;35.0.0" \
+            "platform-tools"
+
+          # Confirm android.jar is healthy (should be ~70 MB)
+          echo "android.jar size: $(du -h $FRESH_SDK/platforms/android-35/android.jar)"
+
+          # Tell Gradle to use the fresh SDK for this build
+          echo "sdk.dir=$FRESH_SDK" > android/local.properties
+          echo "ANDROID_HOME=$FRESH_SDK" >> $CM_ENV
 
       - name: Install Node dependencies
         script: |
