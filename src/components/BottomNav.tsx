@@ -1,25 +1,14 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { Home, ShoppingBag, Package, Store, User, LayoutDashboard, ListOrdered, Wallet } from "lucide-react";
+import { Home, Package, Store, User } from "lucide-react";
 
-type Item = { to: string; label: string; icon: React.ComponentType<{ className?: string }> };
-
-const customer: Item[] = [
+const items = [
   { to: "/app", label: "Home", icon: Home },
   { to: "/app/stores", label: "Stores", icon: Store },
   { to: "/app/orders", label: "Orders", icon: Package },
   { to: "/app/profile", label: "Profile", icon: User },
 ];
 
-const merchant: Item[] = [
-  { to: "/merchant", label: "Home", icon: LayoutDashboard },
-  { to: "/merchant/products", label: "Products", icon: ShoppingBag },
-  { to: "/merchant/orders", label: "Orders", icon: ListOrdered },
-  { to: "/merchant/bank", label: "Payouts", icon: Wallet },
-  { to: "/merchant/profile", label: "Profile", icon: User },
-];
-
-export function BottomNav({ role }: { role: "customer" | "merchant" }) {
-  const items = role === "customer" ? customer : merchant;
+export function BottomNav() {
   const loc = useLocation();
   return (
     <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 backdrop-blur safe-bottom">

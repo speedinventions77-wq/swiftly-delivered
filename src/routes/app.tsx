@@ -6,13 +6,13 @@ export const Route = createFileRoute("/app")({
   beforeLoad: () => {
     if (typeof window !== "undefined") {
       const s = localStorage.getItem("shofast.session");
-      if (!s) throw redirect({ to: "/auth", search: { role: "customer", mode: "signin" } });
+      if (!s) throw redirect({ to: "/auth", search: { mode: "signin" } });
     }
   },
   component: () => (
     <MobileShell>
       <Outlet />
-      <BottomNav role="customer" />
+      <BottomNav />
     </MobileShell>
   ),
 });
