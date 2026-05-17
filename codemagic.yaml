@@ -2,7 +2,7 @@ workflows:
   build_android_aab:
     name: Build Android AAB (Signed Release)
     max_build_duration: 120
-    instance_type: mac_mini_m2
+    instance_type: linux_x2
 
     # ─── Environment ──────────────────────────────────────────────────────────
     environment:
@@ -36,27 +36,15 @@ workflows:
     scripts:
       - name: Install Android SDK 35
         script: |
-          # sdkmanager downloads a corrupt android.jar on this machine.
-          # Instead, scripts/install_android35.py downloads the platform zip
-          # directly from Google CDN and extracts it cleanly.
-          df -h "$HOME"
-
-          FRESH_SDK="$HOME/android-sdk-fresh"
-          mkdir -p "$FRESH_SDK/platforms"
-
-          python3 scripts/install_android35.py
-
-          # Stitch together a complete SDK:
-          # fresh platform-35 (clean android.jar) + system build-tools (not corrupt)
-          cp -r "$ANDROID_HOME/build-tools"    "$FRESH_SDK/" 2>/dev/null || true
-          cp -r "$ANDROID_HOME/platform-tools" "$FRESH_SDK/" 2>/dev/null || true
-          cp -r "$ANDROID_HOME/cmdline-tools"  "$FRESH_SDK/" 2>/dev/null || true
-
-          echo "android.jar size: $(du -h $FRESH_SDK/platforms/android-35/android.jar)"
-
-          # Redirect Gradle to the hybrid SDK via local.properties
-          echo "sdk.dir=$FRESH_SDK" > android/local.properties
-          echo "ANDROID_HOME=$FRESH_SDK" >> $CM_ENV
+          echo "ANDROID_HOME: $ANDROID_HOME"
+          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          if [ ! -f "$SDKMANAGER" ]; then
+            SDKMANAGER=$(find "$ANDROID_HOME" -name sdkmanager -type f 2>/dev/null | head -1)
+          fi
+          echo "Using sdkmanager: $SDKMANAGER"
+          yes | "$SDKMANAGER" --licenses > /dev/null 2>&1 || true
+          "$SDKMANAGER" "platforms;android-35" "build-tools;35.0.0" "platform-tools"
+          echo "android.jar size: $(du -h $ANDROID_HOME/platforms/android-35/android.jar)"
 
       - name: Install Node dependencies
         script: |
