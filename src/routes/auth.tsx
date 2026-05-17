@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { setSession } from "@/lib/store";
+import { supabase } from "@/integrations/supabase/client";
 import { Logo } from "@/components/Logo";
 import { ArrowLeft } from "lucide-react";
 import { z } from "zod";
@@ -20,11 +20,34 @@ function AuthPage() {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  function submit(e: React.FormEvent) {
+  async function submit(e: React.FormEvent) {
     e.preventDefault();
-    setSession({ email, name: name || email.split("@")[0] });
-    navigate({ to: "/app" });
+    setLoading(true);
+    setError(null);
+    try {
+      if (mode === "signup") {
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/app`,
+            data: { full_name: name },
+          },
+        });
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+      }
+      navigate({ to: "/app" });
+    } catch (err: any) {
+      setError(err?.message ?? "Authentication failed");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -48,8 +71,9 @@ function AuthPage() {
         )}
         <Field label="Email" type="email" value={email} onChange={setEmail} placeholder="you@example.com" required />
         <Field label="Password" type="password" value={password} onChange={setPassword} placeholder="••••••••" required />
-        <button type="submit" className="mt-4 w-full rounded-full bg-primary py-3.5 text-sm font-semibold text-primary-foreground active:scale-[0.99]">
-          {mode === "signup" ? "Create account" : "Sign in"}
+        {error && <p className="text-sm text-destructive">{error}</p>}
+        <button type="submit" disabled={loading} className="mt-4 w-full rounded-full bg-primary py-3.5 text-sm font-semibold text-primary-foreground active:scale-[0.99] disabled:opacity-60">
+          {loading ? "Please wait…" : mode === "signup" ? "Create account" : "Sign in"}
         </button>
       </form>
 
