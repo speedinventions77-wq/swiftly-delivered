@@ -36,30 +36,87 @@ workflows:
     scripts:
       - name: Install Android SDK 35
         script: |
-          # Strategy: install android-35 into a fresh home directory so we
-          # never touch the corrupt system SDK (no sudo needed).
-          # Gradle reads sdk.dir from local.properties, so we redirect it there.
+          # sdkmanager downloads a corrupt android.jar every time on this machine.
+          # Fix: download the android-35 platform zip directly from Google's CDN
+          # using Python, then build a hybrid SDK (fresh platform + system build-tools).
+          df -h "$HOME"
+
           FRESH_SDK="$HOME/android-sdk-fresh"
-          mkdir -p "$FRESH_SDK"
+          mkdir -p "$FRESH_SDK/platforms"
 
-          # Locate sdkmanager binary from the existing system SDK
-          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
-          if [ ! -f "$SDKMANAGER" ]; then
-            SDKMANAGER=$(find "$ANDROID_HOME" -name sdkmanager -type f 2>/dev/null | head -1)
-          fi
-          echo "Using sdkmanager: $SDKMANAGER"
+          python3 - << 'PYEOF'
+import urllib.request, xml.etree.ElementTree as ET, os, zipfile, shutil, sys
 
-          # Install clean platform-35 + build-tools into the fresh directory
-          yes | "$SDKMANAGER" --sdk_root="$FRESH_SDK" --licenses > /dev/null 2>&1 || true
-          "$SDKMANAGER" --sdk_root="$FRESH_SDK" \
-            "platforms;android-35" \
-            "build-tools;35.0.0" \
-            "platform-tools"
+BASE     = "https://dl.google.com/android/repository/"
+FRESH    = os.path.expanduser("~/android-sdk-fresh")
+DEST     = os.path.join(FRESH, "platforms", "android-35")
+os.makedirs(DEST, exist_ok=True)
 
-          # Confirm android.jar is healthy (should be ~70 MB)
+# ── 1. Find the exact download URL from Google's repository manifest ──────
+pkg_url = None
+for rev in ("3", "2", "1"):
+    try:
+        req = urllib.request.urlopen(BASE + f"repository2-{rev}.xml", timeout=30)
+        root = ET.parse(req).getroot()
+        for node in root.iter():
+            if node.get("path") == "platforms;android-35":
+                for child in node.iter():
+                    if child.tag.endswith("}url") or child.tag == "url":
+                        pkg_url = BASE + child.text.strip()
+                        break
+            if pkg_url:
+                break
+        if pkg_url:
+            print(f"Found URL (repo2-{rev}.xml): {pkg_url}")
+            break
+    except Exception as e:
+        print(f"repo2-{rev}.xml error: {e}")
+
+if not pkg_url:
+    pkg_url = BASE + "platform-35_r01.zip"
+    print(f"Falling back to: {pkg_url}")
+
+# ── 2. Download the zip ───────────────────────────────────────────────────
+print("Downloading android-35 platform zip...")
+urllib.request.urlretrieve(pkg_url, "/tmp/android-35.zip")
+size = os.path.getsize("/tmp/android-35.zip")
+print(f"Downloaded: {size / 1e6:.1f} MB")
+if size < 10_000_000:
+    print("ERROR: download too small — likely a 404 page"); sys.exit(1)
+
+# ── 3. Extract into platforms/android-35 ─────────────────────────────────
+print("Extracting...")
+with zipfile.ZipFile("/tmp/android-35.zip") as z:
+    members = z.namelist()
+    # Zip may contain a top-level folder (android-35/) or dump files directly
+    prefix = members[0].split("/")[0] + "/" if "/" in members[0] else ""
+    for member in members:
+        rel = member[len(prefix):]
+        if not rel:
+            continue
+        target = os.path.join(DEST, rel)
+        if member.endswith("/"):
+            os.makedirs(target, exist_ok=True)
+        else:
+            os.makedirs(os.path.dirname(target) or DEST, exist_ok=True)
+            with z.open(member) as src, open(target, "wb") as dst:
+                shutil.copyfileobj(src, dst)
+
+jar = os.path.join(DEST, "android.jar")
+if not os.path.exists(jar):
+    print("ERROR: android.jar not found after extraction"); sys.exit(1)
+print(f"android.jar: {os.path.getsize(jar) / 1e6:.1f} MB  ✓")
+PYEOF
+
+          # ── 4. Build a complete SDK from fresh platform + system build-tools ──
+          # The system SDK has working build-tools/aapt2; only the android.jar is corrupt.
+          cp -r "$ANDROID_HOME/build-tools"    "$FRESH_SDK/" 2>/dev/null || true
+          cp -r "$ANDROID_HOME/platform-tools" "$FRESH_SDK/" 2>/dev/null || true
+          cp -r "$ANDROID_HOME/cmdline-tools"  "$FRESH_SDK/" 2>/dev/null || true
+
           echo "android.jar size: $(du -h $FRESH_SDK/platforms/android-35/android.jar)"
 
-          # Tell Gradle to use the fresh SDK for this build
+          # ── 5. Redirect Gradle to the hybrid SDK ──────────────────────────────
           echo "sdk.dir=$FRESH_SDK" > android/local.properties
           echo "ANDROID_HOME=$FRESH_SDK" >> $CM_ENV
 

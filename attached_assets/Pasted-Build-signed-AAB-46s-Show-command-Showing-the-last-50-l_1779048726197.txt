@@ -1,0 +1,58 @@
+Build signed AAB
+46s
+
+
+
+Show command
+Showing the last 50 lines. Click this button to load the full log
+> Task :capacitor-android:processReleaseJavaRes NO-SOURCE
+> Task :capacitor-android:bundleLibResRelease NO-SOURCE
+> Task :capacitor-cordova-android-plugins:processReleaseJavaRes NO-SOURCE
+> Task :capacitor-cordova-android-plugins:bundleLibResRelease NO-SOURCE
+> Task :app:mergeReleaseArtProfile
+> Task :capacitor-cordova-android-plugins:bundleLibRuntimeToJarRelease
+> Task :capacitor-android:bundleLibRuntimeToJarRelease
+> Task :app:processApplicationManifestReleaseForBundle
+> Task :app:mergeReleaseShaders
+> Task :app:compileReleaseShaders NO-SOURCE
+> Task :app:generateReleaseAssets UP-TO-DATE
+> Task :capacitor-android:mergeReleaseShaders
+> Task :capacitor-android:compileReleaseShaders NO-SOURCE
+> Task :capacitor-android:generateReleaseAssets UP-TO-DATE
+> Task :capacitor-android:packageReleaseAssets
+> Task :capacitor-cordova-android-plugins:mergeReleaseShaders
+> Task :capacitor-cordova-android-plugins:compileReleaseShaders NO-SOURCE
+> Task :capacitor-cordova-android-plugins:generateReleaseAssets UP-TO-DATE
+> Task :capacitor-cordova-android-plugins:packageReleaseAssets
+> Task :app:mergeReleaseAssets
+> Task :app:bundleReleaseResources FAILED
+> Task :app:mergeReleaseJniLibFolders
+> Task :app:processReleaseManifestForPackage
+> Task :app:mergeReleaseJavaResource
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:bundleReleaseResources'.
+> A failure occurred while executing com.android.build.gradle.internal.res.Aapt2ProcessResourcesRunnable
+   > Android resource linking failed
+     aapt2 E 05-17 20:09:38  2033 17683 LoadedArsc.cpp:94] RES_TABLE_TYPE_TYPE entry offsets overlap actual entry data.
+     aapt2 E 05-17 20:09:38  2033 17683 ApkAssets.cpp:152] Failed to load resources table in APK '/Users/builder/android-sdk-fresh/platforms/android-35/android.jar'.
+     error: failed to load include path /Users/builder/android-sdk-fresh/platforms/android-35/android.jar.
+
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+
+* Get more help at https://help.gradle.org
+
+BUILD FAILED in 45s
+53 actionable tasks: 53 executed
+
+
+Build failed :|
+Step 7 script `Build signed AAB` exited with status code 1
+
+Publishi
