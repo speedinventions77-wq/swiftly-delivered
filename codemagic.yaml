@@ -21,7 +21,7 @@ workflows:
         # Base64-encoded Android keystore (RSA-2048, valid until 2053).
         # Generated from: keytool -genkeypair ... -alias shofast-customers
         # DN: CN=Shofast, OU=Mobile, O=Shofast, L=Lagos, ST=Lagos, C=NG
-        CM_KEYSTORE: "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"
+        CM_KEYSTORE: "MIIKygIBAzCCCnQGCSqGSIb3DQEHAaCCCmUEggphMIIKXTCCBcQGCSqGSIb3DQEHAaCCBbUEggWxMIIFrTCCBakGCyqGSIb3DQEMCgECoIIFQDCCBTwwZgYJKoZIhvcNAQUNMFkwOAYJKoZIhvcNAQUMMCsEFABZ7W8oYoP9q3mDxe4LTQYXRaI4AgInEAIBIDAMBggqhkiG9w0CCQUAMB0GCWCGSAFlAwQBKgQQeeR36p98pDpE738txFLkVASCBND+hpKK2bxr381YXD+sau93hVwc4EKdcATJYDrJIqeY0ZnUtSJHhU55FIGRfCaIdRYstTOgznJcZw7KJ1jsWlkAU/bb+Dl/YH7SpWU9nbSqyA4dkM7IW9fzRPanW7k75TEAc/Nv+0GRABAz+xAShRMV1sFQhck9bmSTF+NgkiTgrbOQq0e41zGuJr6itWlg/wu723YRiJHl8tsBwKqyzgsPGhDLI6u1+xN0RTTxyjflJhMF2VkL7eW+qZN4c1Fa5oGBEXw7Wn4kG5ji0JjkyVqugyGroBYj/gNJ2b3ftGwO7lHtJBrDlqzm6nFZOJD+S5Rcr9H6iS1RJoJMDUzgXBWqNyD+ZKX88BsNgykDQ3wyoOQnL4PdOoPMqb2DJ8cq6IHLg5qe+oyUtAUr/uG/mK7Ad1E95kzSS5WjjKS7ZHsISZHj/xU4mU9axYy2ZocQTenCWhyLKaSp8ktBQZqUc0F1KXIt7GzBeRU1LaNCHK0/NP2/18N+sDwdKGPx0kcnVZb4eAwtiox1Dmn22juw0+eZq6jODqFPNnQqWkVGlCZ4QrYpLw9vDFMybFsvdZeELWr2LBH0OzVnSMJ6fL8A+hsjILDpK0g75/qk9v6IYigPxnw24D3s+b90dRMSOhudF8svbepkZiaJ2DPgK++BpELn7h1F10KvVbINXj4nytNJGoVuwdiyPinkhs5aYFG7m/EbVlkYiDfKAdQdR51C0IjY5rZERFHzIwQvSI1snKjzbZxpo8Qdm3agPCLCSVodgbXuOwcBVPB6j2JM8ABMHECdZ1mcdhN/L139K/RnUPkS5UUfBgVihJTGzvdufpXvNKdqY6cC2ImMhHP5taPgc+beZSQtGRENdpcEn33qA/NG/geNpbT9ukrMJvjKeeLVgm38FQZChKkNdQ4r9mz4wFFtOnzso6PCmRqMFCrkjflPcdGmmKfcfQiJ4LJHIfKGydjqFewHt2rfYNEZKuaa54ayQioJb7EYn27IXueL1phTPSQh4GJqFKFAkqJELwdO6ZJNNJ99pPtrL39vnik+wybUb8ymz+As8uTyNNJBDt1Y3O9Aflqlm7+Y/qz08OMEK4g+YOkuEe7HkjyQ+rdtOOp1edEq+tokmbQr+LCpORDAaP0RGbimt+M6o11j8vzJ+dCAtktZ750MtG0LiA8fvgjOvRuJCr1WwHk29q10zfpyeeU7FjUVbrtugk1eS/2MqAtSk4uGX+J5TyNgELUde3wVFu4OsLdg+GPfxHN/GkAhecQkDTDNpUTQNTFwn9pOJ+CER+j8BjtCpXqHMYEvBkkzLwv58RKX+f4QieGspSQSxg8ZyaJKfZWKmgttF4M4AH5fDiw7pcROi2ClOAlZ3eZtbr3ZbjCnqK5y7KGdkYBYpiLW1Vvx2ngXIsoqUjuJrYgTc6NjB1gIogZpmyAAM9fSF7rc632kgbTgveHYrap3BJIyw86LkiB0F4zvTGrT0uaD49OTkY+pGAzdzlgDeDfnUcLRUWScb5XvtG1OqqTwvyiSEcAHZukhKBolc5tEHyQ4Iq9crW65C1n7puGTrWNp081gp6B/AvMx6Y6XD/zMagx3i56ScuYKCZEW7nnHrqpQfzWJPsIEoSNFvho1UZeo8/XKc5581TaHaR+hOMO/mDFWMDEGCSqGSIb3DQEJFDEkHiIAcwBoAG8AZgBhAHMAdAAtAGMAdQBzAHQAbwBtAGUAcgBzMCEGCS..."
 
     # ─── Triggering ───────────────────────────────────────────────────────────
     triggering:
@@ -36,87 +36,25 @@ workflows:
     scripts:
       - name: Install Android SDK 35
         script: |
-          # sdkmanager downloads a corrupt android.jar every time on this machine.
-          # Fix: download the android-35 platform zip directly from Google's CDN
-          # using Python, then build a hybrid SDK (fresh platform + system build-tools).
+          # sdkmanager downloads a corrupt android.jar on this machine.
+          # Instead, scripts/install_android35.py downloads the platform zip
+          # directly from Google CDN and extracts it cleanly.
           df -h "$HOME"
 
           FRESH_SDK="$HOME/android-sdk-fresh"
           mkdir -p "$FRESH_SDK/platforms"
 
-          python3 - << 'PYEOF'
-import urllib.request, xml.etree.ElementTree as ET, os, zipfile, shutil, sys
+          python3 scripts/install_android35.py
 
-BASE     = "https://dl.google.com/android/repository/"
-FRESH    = os.path.expanduser("~/android-sdk-fresh")
-DEST     = os.path.join(FRESH, "platforms", "android-35")
-os.makedirs(DEST, exist_ok=True)
-
-# ── 1. Find the exact download URL from Google's repository manifest ──────
-pkg_url = None
-for rev in ("3", "2", "1"):
-    try:
-        req = urllib.request.urlopen(BASE + f"repository2-{rev}.xml", timeout=30)
-        root = ET.parse(req).getroot()
-        for node in root.iter():
-            if node.get("path") == "platforms;android-35":
-                for child in node.iter():
-                    if child.tag.endswith("}url") or child.tag == "url":
-                        pkg_url = BASE + child.text.strip()
-                        break
-            if pkg_url:
-                break
-        if pkg_url:
-            print(f"Found URL (repo2-{rev}.xml): {pkg_url}")
-            break
-    except Exception as e:
-        print(f"repo2-{rev}.xml error: {e}")
-
-if not pkg_url:
-    pkg_url = BASE + "platform-35_r01.zip"
-    print(f"Falling back to: {pkg_url}")
-
-# ── 2. Download the zip ───────────────────────────────────────────────────
-print("Downloading android-35 platform zip...")
-urllib.request.urlretrieve(pkg_url, "/tmp/android-35.zip")
-size = os.path.getsize("/tmp/android-35.zip")
-print(f"Downloaded: {size / 1e6:.1f} MB")
-if size < 10_000_000:
-    print("ERROR: download too small — likely a 404 page"); sys.exit(1)
-
-# ── 3. Extract into platforms/android-35 ─────────────────────────────────
-print("Extracting...")
-with zipfile.ZipFile("/tmp/android-35.zip") as z:
-    members = z.namelist()
-    # Zip may contain a top-level folder (android-35/) or dump files directly
-    prefix = members[0].split("/")[0] + "/" if "/" in members[0] else ""
-    for member in members:
-        rel = member[len(prefix):]
-        if not rel:
-            continue
-        target = os.path.join(DEST, rel)
-        if member.endswith("/"):
-            os.makedirs(target, exist_ok=True)
-        else:
-            os.makedirs(os.path.dirname(target) or DEST, exist_ok=True)
-            with z.open(member) as src, open(target, "wb") as dst:
-                shutil.copyfileobj(src, dst)
-
-jar = os.path.join(DEST, "android.jar")
-if not os.path.exists(jar):
-    print("ERROR: android.jar not found after extraction"); sys.exit(1)
-print(f"android.jar: {os.path.getsize(jar) / 1e6:.1f} MB  ✓")
-PYEOF
-
-          # ── 4. Build a complete SDK from fresh platform + system build-tools ──
-          # The system SDK has working build-tools/aapt2; only the android.jar is corrupt.
+          # Stitch together a complete SDK:
+          # fresh platform-35 (clean android.jar) + system build-tools (not corrupt)
           cp -r "$ANDROID_HOME/build-tools"    "$FRESH_SDK/" 2>/dev/null || true
           cp -r "$ANDROID_HOME/platform-tools" "$FRESH_SDK/" 2>/dev/null || true
           cp -r "$ANDROID_HOME/cmdline-tools"  "$FRESH_SDK/" 2>/dev/null || true
 
           echo "android.jar size: $(du -h $FRESH_SDK/platforms/android-35/android.jar)"
 
-          # ── 5. Redirect Gradle to the hybrid SDK ──────────────────────────────
+          # Redirect Gradle to the hybrid SDK via local.properties
           echo "sdk.dir=$FRESH_SDK" > android/local.properties
           echo "ANDROID_HOME=$FRESH_SDK" >> $CM_ENV
 
