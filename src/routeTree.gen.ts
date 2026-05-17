@@ -9,38 +9,230 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as MerchantRouteImport } from './routes/merchant'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as MerchantIndexRouteImport } from './routes/merchant.index'
+import { Route as AppIndexRouteImport } from './routes/app.index'
+import { Route as MerchantProfileRouteImport } from './routes/merchant.profile'
+import { Route as MerchantProductsRouteImport } from './routes/merchant.products'
+import { Route as MerchantOrdersRouteImport } from './routes/merchant.orders'
+import { Route as MerchantBankRouteImport } from './routes/merchant.bank'
+import { Route as AppTrackRouteImport } from './routes/app.track'
+import { Route as AppStoresRouteImport } from './routes/app.stores'
+import { Route as AppProfileRouteImport } from './routes/app.profile'
+import { Route as AppOrdersRouteImport } from './routes/app.orders'
+import { Route as AppServiceTypeRouteImport } from './routes/app.service.$type'
 
+const MerchantRoute = MerchantRouteImport.update({
+  id: '/merchant',
+  path: '/merchant',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppRoute = AppRouteImport.update({
+  id: '/app',
+  path: '/app',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MerchantIndexRoute = MerchantIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => MerchantRoute,
+} as any)
+const AppIndexRoute = AppIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppRoute,
+} as any)
+const MerchantProfileRoute = MerchantProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => MerchantRoute,
+} as any)
+const MerchantProductsRoute = MerchantProductsRouteImport.update({
+  id: '/products',
+  path: '/products',
+  getParentRoute: () => MerchantRoute,
+} as any)
+const MerchantOrdersRoute = MerchantOrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
+  getParentRoute: () => MerchantRoute,
+} as any)
+const MerchantBankRoute = MerchantBankRouteImport.update({
+  id: '/bank',
+  path: '/bank',
+  getParentRoute: () => MerchantRoute,
+} as any)
+const AppTrackRoute = AppTrackRouteImport.update({
+  id: '/track',
+  path: '/track',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppStoresRoute = AppStoresRouteImport.update({
+  id: '/stores',
+  path: '/stores',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppProfileRoute = AppProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppOrdersRoute = AppOrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppServiceTypeRoute = AppServiceTypeRouteImport.update({
+  id: '/service/$type',
+  path: '/service/$type',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/app': typeof AppRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/merchant': typeof MerchantRouteWithChildren
+  '/app/orders': typeof AppOrdersRoute
+  '/app/profile': typeof AppProfileRoute
+  '/app/stores': typeof AppStoresRoute
+  '/app/track': typeof AppTrackRoute
+  '/merchant/bank': typeof MerchantBankRoute
+  '/merchant/orders': typeof MerchantOrdersRoute
+  '/merchant/products': typeof MerchantProductsRoute
+  '/merchant/profile': typeof MerchantProfileRoute
+  '/app/': typeof AppIndexRoute
+  '/merchant/': typeof MerchantIndexRoute
+  '/app/service/$type': typeof AppServiceTypeRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/app/orders': typeof AppOrdersRoute
+  '/app/profile': typeof AppProfileRoute
+  '/app/stores': typeof AppStoresRoute
+  '/app/track': typeof AppTrackRoute
+  '/merchant/bank': typeof MerchantBankRoute
+  '/merchant/orders': typeof MerchantOrdersRoute
+  '/merchant/products': typeof MerchantProductsRoute
+  '/merchant/profile': typeof MerchantProfileRoute
+  '/app': typeof AppIndexRoute
+  '/merchant': typeof MerchantIndexRoute
+  '/app/service/$type': typeof AppServiceTypeRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/app': typeof AppRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/merchant': typeof MerchantRouteWithChildren
+  '/app/orders': typeof AppOrdersRoute
+  '/app/profile': typeof AppProfileRoute
+  '/app/stores': typeof AppStoresRoute
+  '/app/track': typeof AppTrackRoute
+  '/merchant/bank': typeof MerchantBankRoute
+  '/merchant/orders': typeof MerchantOrdersRoute
+  '/merchant/products': typeof MerchantProductsRoute
+  '/merchant/profile': typeof MerchantProfileRoute
+  '/app/': typeof AppIndexRoute
+  '/merchant/': typeof MerchantIndexRoute
+  '/app/service/$type': typeof AppServiceTypeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/app'
+    | '/auth'
+    | '/merchant'
+    | '/app/orders'
+    | '/app/profile'
+    | '/app/stores'
+    | '/app/track'
+    | '/merchant/bank'
+    | '/merchant/orders'
+    | '/merchant/products'
+    | '/merchant/profile'
+    | '/app/'
+    | '/merchant/'
+    | '/app/service/$type'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/auth'
+    | '/app/orders'
+    | '/app/profile'
+    | '/app/stores'
+    | '/app/track'
+    | '/merchant/bank'
+    | '/merchant/orders'
+    | '/merchant/products'
+    | '/merchant/profile'
+    | '/app'
+    | '/merchant'
+    | '/app/service/$type'
+  id:
+    | '__root__'
+    | '/'
+    | '/app'
+    | '/auth'
+    | '/merchant'
+    | '/app/orders'
+    | '/app/profile'
+    | '/app/stores'
+    | '/app/track'
+    | '/merchant/bank'
+    | '/merchant/orders'
+    | '/merchant/products'
+    | '/merchant/profile'
+    | '/app/'
+    | '/merchant/'
+    | '/app/service/$type'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AppRoute: typeof AppRouteWithChildren
+  AuthRoute: typeof AuthRoute
+  MerchantRoute: typeof MerchantRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/merchant': {
+      id: '/merchant'
+      path: '/merchant'
+      fullPath: '/merchant'
+      preLoaderRoute: typeof MerchantRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app': {
+      id: '/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +240,131 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/merchant/': {
+      id: '/merchant/'
+      path: '/'
+      fullPath: '/merchant/'
+      preLoaderRoute: typeof MerchantIndexRouteImport
+      parentRoute: typeof MerchantRoute
+    }
+    '/app/': {
+      id: '/app/'
+      path: '/'
+      fullPath: '/app/'
+      preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/merchant/profile': {
+      id: '/merchant/profile'
+      path: '/profile'
+      fullPath: '/merchant/profile'
+      preLoaderRoute: typeof MerchantProfileRouteImport
+      parentRoute: typeof MerchantRoute
+    }
+    '/merchant/products': {
+      id: '/merchant/products'
+      path: '/products'
+      fullPath: '/merchant/products'
+      preLoaderRoute: typeof MerchantProductsRouteImport
+      parentRoute: typeof MerchantRoute
+    }
+    '/merchant/orders': {
+      id: '/merchant/orders'
+      path: '/orders'
+      fullPath: '/merchant/orders'
+      preLoaderRoute: typeof MerchantOrdersRouteImport
+      parentRoute: typeof MerchantRoute
+    }
+    '/merchant/bank': {
+      id: '/merchant/bank'
+      path: '/bank'
+      fullPath: '/merchant/bank'
+      preLoaderRoute: typeof MerchantBankRouteImport
+      parentRoute: typeof MerchantRoute
+    }
+    '/app/track': {
+      id: '/app/track'
+      path: '/track'
+      fullPath: '/app/track'
+      preLoaderRoute: typeof AppTrackRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/stores': {
+      id: '/app/stores'
+      path: '/stores'
+      fullPath: '/app/stores'
+      preLoaderRoute: typeof AppStoresRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/profile': {
+      id: '/app/profile'
+      path: '/profile'
+      fullPath: '/app/profile'
+      preLoaderRoute: typeof AppProfileRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/orders': {
+      id: '/app/orders'
+      path: '/orders'
+      fullPath: '/app/orders'
+      preLoaderRoute: typeof AppOrdersRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/service/$type': {
+      id: '/app/service/$type'
+      path: '/service/$type'
+      fullPath: '/app/service/$type'
+      preLoaderRoute: typeof AppServiceTypeRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
+interface AppRouteChildren {
+  AppOrdersRoute: typeof AppOrdersRoute
+  AppProfileRoute: typeof AppProfileRoute
+  AppStoresRoute: typeof AppStoresRoute
+  AppTrackRoute: typeof AppTrackRoute
+  AppIndexRoute: typeof AppIndexRoute
+  AppServiceTypeRoute: typeof AppServiceTypeRoute
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppOrdersRoute: AppOrdersRoute,
+  AppProfileRoute: AppProfileRoute,
+  AppStoresRoute: AppStoresRoute,
+  AppTrackRoute: AppTrackRoute,
+  AppIndexRoute: AppIndexRoute,
+  AppServiceTypeRoute: AppServiceTypeRoute,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+
+interface MerchantRouteChildren {
+  MerchantBankRoute: typeof MerchantBankRoute
+  MerchantOrdersRoute: typeof MerchantOrdersRoute
+  MerchantProductsRoute: typeof MerchantProductsRoute
+  MerchantProfileRoute: typeof MerchantProfileRoute
+  MerchantIndexRoute: typeof MerchantIndexRoute
+}
+
+const MerchantRouteChildren: MerchantRouteChildren = {
+  MerchantBankRoute: MerchantBankRoute,
+  MerchantOrdersRoute: MerchantOrdersRoute,
+  MerchantProductsRoute: MerchantProductsRoute,
+  MerchantProfileRoute: MerchantProfileRoute,
+  MerchantIndexRoute: MerchantIndexRoute,
+}
+
+const MerchantRouteWithChildren = MerchantRoute._addFileChildren(
+  MerchantRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AppRoute: AppRouteWithChildren,
+  AuthRoute: AuthRoute,
+  MerchantRoute: MerchantRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
