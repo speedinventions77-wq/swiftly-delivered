@@ -39,13 +39,13 @@ workflows:
           node --version
           npm install
 
-      - name: Build web app
+      - name: Build web app (mobile SPA)
         script: |
-          npm run build
+          npm run build:mobile
 
-      - name: Prepare Capacitor Android
+      - name: Sync Capacitor Android
         script: |
-          npx cap add android || true
+          # android/ is already committed — skip "cap add", just sync assets
           npx cap sync android
 
       - name: Decode keystore
