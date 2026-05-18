@@ -23,28 +23,46 @@ function AuthPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  function friendlyError(err: any): string {
+    const msg = String(err?.message ?? err ?? "");
+    const code = err?.code || err?.error_code;
+    if (code === "weak_password" || /pwned|known to be weak|easy to guess/i.test(msg))
+      return "That password has been seen in a data breach. Please choose a stronger one (try mixing letters, numbers and symbols).";
+    if (code === "user_already_exists" || /already registered|already exists/i.test(msg))
+      return "An account with that email already exists. Try signing in instead.";
+    if (/invalid login credentials/i.test(msg)) return "Wrong email or password.";
+    if (/email not confirmed/i.test(msg)) return "Please confirm your email first — check your inbox.";
+    if (/password should be at least/i.test(msg)) return msg;
+    if (/rate limit|too many/i.test(msg)) return "Too many attempts. Please wait a moment and try again.";
+    return msg || "Authentication failed";
+  }
+
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    setLoading(true);
     setError(null);
+    if (mode === "signup") {
+      if (!name.trim()) return setError("Please enter your full name.");
+      if (password.length < 8) return setError("Password must be at least 8 characters.");
+    }
+    setLoading(true);
     try {
       if (mode === "signup") {
         const { error } = await supabase.auth.signUp({
-          email,
+          email: email.trim(),
           password,
           options: {
             emailRedirectTo: `${window.location.origin}/app`,
-            data: { full_name: name },
+            data: { full_name: name.trim() },
           },
         });
         if (error) throw error;
       } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
         if (error) throw error;
       }
       navigate({ to: "/app" });
     } catch (err: any) {
-      setError(err?.message ?? "Authentication failed");
+      setError(friendlyError(err));
     } finally {
       setLoading(false);
     }
@@ -69,9 +87,20 @@ function AuthPage() {
         {mode === "signup" && (
           <Field label="Full name" value={name} onChange={setName} placeholder="Ada Lovelace" />
         )}
-        <Field label="Email" type="email" value={email} onChange={setEmail} placeholder="you@example.com" required />
-        <Field label="Password" type="password" value={password} onChange={setPassword} placeholder="••••••••" required />
-        {error && <p className="text-sm text-destructive">{error}</p>}
+        <Field label="Email" type="email" value={email} onChange={setEmail} placeholder="you@example.com" required autoComplete="email" />
+        <Field
+          label="Password"
+          type="password"
+          value={password}
+          onChange={setPassword}
+          placeholder="At least 8 characters"
+          required
+          autoComplete={mode === "signup" ? "new-password" : "current-password"}
+        />
+        {mode === "signup" && !error && (
+          <p className="text-[11px] text-muted-foreground">Use 8+ characters with a mix of letters, numbers & symbols. Common passwords are blocked.</p>
+        )}
+        {error && <p className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">{error}</p>}
         <button type="submit" disabled={loading} className="mt-4 w-full rounded-full bg-primary py-3.5 text-sm font-semibold text-primary-foreground active:scale-[0.99] disabled:opacity-60">
           {loading ? "Please wait…" : mode === "signup" ? "Create account" : "Sign in"}
         </button>
@@ -89,7 +118,7 @@ function AuthPage() {
   );
 }
 
-function Field({ label, value, onChange, type = "text", placeholder, required }: { label: string; value: string; onChange: (v: string) => void; type?: string; placeholder?: string; required?: boolean }) {
+function Field({ label, value, onChange, type = "text", placeholder, required, autoComplete }: { label: string; value: string; onChange: (v: string) => void; type?: string; placeholder?: string; required?: boolean; autoComplete?: string }) {
   return (
     <label className="block">
       <span className="mb-1.5 block text-xs font-medium text-muted-foreground">{label}</span>
@@ -98,7 +127,7 @@ function Field({ label, value, onChange, type = "text", placeholder, required }:
         value={value}
         required={required}
         placeholder={placeholder}
-        autoComplete={type === "password" ? "current-password" : "on"}
+        autoComplete={autoComplete ?? (type === "password" ? "current-password" : "on")}
         autoCorrect="off"
         autoCapitalize={type === "email" ? "none" : "words"}
         spellCheck={false}
