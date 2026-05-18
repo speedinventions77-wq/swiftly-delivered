@@ -1,21 +1,37 @@
-# Add project specific ProGuard rules here.
-# You can control the set of applied configuration files using the
-# proguardFiles setting in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
+# ── WebView JavaScript Interface ──────────────────────────────────────────────
+# R8/ProGuard strips @JavascriptInterface methods by default because they are
+# called from JavaScript (not Java), so the shrinker thinks they are dead code.
+# Without these rules the Capacitor JS↔Native bridge is silently destroyed in
+# every release/minified build, causing the entire app to freeze.
+-keepattributes JavascriptInterface
+-keepclassmembers class * {
+    @android.webkit.JavascriptInterface <methods>;
+}
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+# ── Capacitor Core ────────────────────────────────────────────────────────────
+-keep class com.getcapacitor.** { *; }
+-keep @com.getcapacitor.annotation.CapacitorPlugin class * { *; }
+-keep @com.getcapacitor.annotation.Permission class * { *; }
+-keepclassmembers class * extends com.getcapacitor.Plugin {
+    public <methods>;
+}
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+# ── Capacitor Keyboard Plugin ─────────────────────────────────────────────────
+-keep class com.capacitorjs.plugins.keyboard.** { *; }
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# ── Cordova compatibility layer ───────────────────────────────────────────────
+-keep public class * extends org.apache.cordova.CordovaPlugin
+-keep public class org.apache.cordova.** { *; }
+
+# ── WebView clients ───────────────────────────────────────────────────────────
+-keepclassmembers class * extends android.webkit.WebViewClient {
+    public void *(android.webkit.WebView, java.lang.String, android.graphics.Bitmap);
+    public boolean *(android.webkit.WebView, java.lang.String);
+}
+-keepclassmembers class * extends android.webkit.WebChromeClient {
+    public void *(android.webkit.WebView, java.lang.String);
+}
+
+# ── Debugging ─────────────────────────────────────────────────────────────────
+-keepattributes SourceFile,LineNumberTable
+-keepattributes *Annotation*
