@@ -231,7 +231,7 @@ function FormField({
         autoCorrect="off"
         spellCheck={false}
         inputMode={inputMode}
-        className={`w-full rounded-xl border px-4 py-3.5 text-base outline-none ring-ring focus:ring-2 ${
+        className={`w-full rounded-xl border px-4 py-3.5 text-base text-foreground placeholder:text-muted-foreground outline-none ring-ring focus:ring-2 ${
           error ? "border-destructive bg-destructive/5" : "border-input bg-card"
         }`}
       />
