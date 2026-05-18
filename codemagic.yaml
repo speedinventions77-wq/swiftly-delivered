@@ -10,7 +10,7 @@ workflows:
 
       vars:
         PACKAGE_NAME: "app.shofast.customers"
-        ANDROID_COMPILE_SDK: "35"
+        ANDROID_COMPILE_SDK: "34"
 
         # ── Signing credentials — all embedded, no dashboard setup required ──
         CM_KEY_ALIAS: "shofast-customers"
@@ -20,7 +20,7 @@ workflows:
         # Base64-encoded Android keystore (RSA-2048, valid until 2053).
         # Generated from: keytool -genkeypair ... -alias shofast-customers
         # DN: CN=Shofast, OU=Mobile, O=Shofast, L=Lagos, ST=Lagos, C=NG
-        CM_KEYSTORE: "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"
+        CM_KEYSTORE: "MIIKygIBAzCCCnQGCSqGSIb3DQEHAaCCCmUEggphMIIKXTCCBcQGCSqGSIb3DQEHAaCCBbUEggWxMIIFrTCCBakGCyqGSIb3DQEMCgECoIIFQDCCBTwwZgYJKoZIhvcNAQUNMFkwOAYJKoZIhvcNAQUMMCsEFABZ7W8oYoP9q3mDxe4LTQYXRaI4AgInEAIBIDAMBggqhkiG9w0CCQUAMB0GCWCGSAFlAwQBKgQQeeR36p98pDpE738txFLkVASCBND+hpKK2bxr381YXD+sau93hVwc4EKdcATJYDrJIqeY0ZnUtSJHhU55FIGRfCaIdRYstTOgznJcZw7KJ1jsWlkAU/bb+Dl/YH7SpWU9nbSqyA4dkM7IW9fzRPanW7k75TEAc/Nv+0GRABAz+xAShRMV1sFQhck9bmSTF+NgkiTgrbOQq0e41zGuJr6itWlg/wu723YRiJHl8tsBwKqyzgsPGhDLI6u1+xN0RTTxyjflJhMF2VkL7eW+qZN4c1Fa5oGBEXw7Wn4kG5ji0JjkyVqugyGroBYj/gNJ2b3ftGwO7lHtJBrDlqzm6nFZOJD+S5Rcr9H6iS1RJoJMDUzgXBWqNyD+ZKX88BsNgykDQ3wyoOQnL4PdOoPMqb2DJ8cq6IHLg5qe+oyUtAUr/uG/mK7Ad1E95kzSS5WjjKS7ZHsISZHj/xU4mU9axYy2ZocQTenCWhyLKaSp8ktBQZqUc0F1KXIt7GzBeRU1LaNCHK0/NP2/18N+sDwdKGPx0kcnVZb4eAwtiox1Dmn22juw0+eZq6jODqFPNnQqWkVGlCZ4QrYpLw9vDFMybFsvdZeELWr2LBH0OzVnSMJ6fL8A+hsjILDpK0g75/qk9v6IYigPxnw24D3s+b90dRMSOhudF8svbepkZiaJ2DPgK++BpELn7h1F10KvVbINXj4nytNJGoVuwdiyPinkhs5aYFG7m/EbVlkYiDfKAdQdR51C0IjY5rZERFHzIwQvSI1snKjzbZxpo8Qdm3agPCLCSVodgbXuOwcBVPB6j2JM8ABMHECdZ1mcdhN/L139K/RnUPkS5UUfBgVihJTGzvdufpXvNKdqY6cC2ImMhHP5taPgc+beZSQtGRENdpcEn33qA/NG/geNpbT9ukrMJvjKeeLVgm38FQZChKkNdQ4r9mz4wFFtOnzso6PCmRqMFCrkjflPcdGmmKfcfQiJ4LJHIfKGydjqFewHt2rfYNEZKuaa54ayQioJb7EYn27IXueL1phTPSQh4GJqFKFAkqJELwdO6ZJNNJ99pPtrL39vnik+wybUb8ymz+As8uTyNNJBDt1Y3O9Aflqlm7+Y/qz08OMEK4g+YOkuEe7HkjyQ+rdtOOp1edEq+tokmbQr+LCpORDAaP0RGbimt+M6o11j8vzJ+dCAtktZ750MtG0LiA8fvgjOvRuJCr1WwHk29q10zfpyeeU7FjUVbrtugk1eS/2MqAtSk4uGX+J5TyNgELUde3wVFu4OsLdg+GPfxHN/GkAhecQkDTDNpUTQNTFwn9pOJ+CER+j8BjtCpXqHMYEvBkkzLwv58RKX+f4QieGspSQSxg8ZyaJKfZWKmgttF4M4AH5fDiw7pcROi2ClOAlZ3eZtbr3ZbjCnqK5y7KGdkYBYpiLW1Vvx2ngXIsoqUjuJrYgTc6NjB1gIogZpmyAAM9fSF7rc632kgbTgveHYrap3BJIyw86LkiB0F4zvTGrT0uaD49OTkY+pGAzdzlgDeDfnUcLRUWScb5XvtG1OqqTwvyiSEcAHZukhKBolc5tEHyQ4Iq9crW65C1n7puGTrWNp081gp6B/AvMx6Y6XD/zMagx3i56ScuYKCZEW7nnHrqpQfzWJPsIEoSNFvho1UZeo8/XKc5581TaHaR+hOMO/mDFWMDEGCSqGSIb3DQEJFDEkHiIAcwBoAG8AZgBhAHMAdAAtAGMAdQBzAHQAbwBtAGUAcgBzMCEGCS"
 
     # ─── Triggering ───────────────────────────────────────────────────────────
     triggering:
@@ -33,32 +33,14 @@ workflows:
 
     # ─── Scripts ──────────────────────────────────────────────────────────────
     scripts:
-      - name: Install Android SDK 35
+      - name: Verify Android SDK 34
         script: |
-          # Download android-35 platform directly from Google CDN (bypasses any
-          # corrupt pre-installed android.jar on the build machine).
-          FRESH_SDK="$HOME/android-sdk-fresh"
-          mkdir -p "$FRESH_SDK/platforms"
-          python3 scripts/install_android35.py
-
-          # Copy working build-tools / platform-tools / licenses from the system SDK
-          cp -r "$ANDROID_HOME/build-tools"    "$FRESH_SDK/" 2>/dev/null || true
-          cp -r "$ANDROID_HOME/platform-tools" "$FRESH_SDK/" 2>/dev/null || true
-          cp -r "$ANDROID_HOME/cmdline-tools"  "$FRESH_SDK/" 2>/dev/null || true
-          cp -r "$ANDROID_HOME/licenses"       "$FRESH_SDK/" 2>/dev/null || true
-
-          # Accept all licenses in the fresh SDK so Gradle doesn't block on them
-          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
-          if [ ! -f "$SDKMANAGER" ]; then
-            SDKMANAGER=$(find "$ANDROID_HOME" -name sdkmanager -type f 2>/dev/null | head -1)
-          fi
-          yes | "$SDKMANAGER" --sdk_root="$FRESH_SDK" --licenses > /dev/null 2>&1 || true
-
-          echo "android.jar size: $(du -h $FRESH_SDK/platforms/android-35/android.jar)"
-
-          # Redirect Gradle to the hybrid SDK
-          echo "sdk.dir=$FRESH_SDK" > android/local.properties
-          echo "ANDROID_HOME=$FRESH_SDK" >> $CM_ENV
+          # SDK 34 is pre-installed and verified on CodeMagic — no custom download needed.
+          # Write local.properties pointing to the system SDK so Gradle finds it.
+          echo "sdk.dir=$ANDROID_HOME" > android/local.properties
+          echo "Android SDK location: $ANDROID_HOME"
+          ls "$ANDROID_HOME/platforms/" | grep android-34 && echo "android-34 found OK" || (echo "ERROR: android-34 not found" && exit 1)
+          du -h "$ANDROID_HOME/platforms/android-34/android.jar" && echo "android.jar OK"
 
       - name: Install Node dependencies
         script: |
@@ -77,8 +59,16 @@ workflows:
       - name: Decode keystore
         script: |
           KEYSTORE_PATH="$CM_BUILD_DIR/shofast-customers.keystore"
-          echo "$CM_KEYSTORE" | base64 --decode > "$KEYSTORE_PATH"
+          # Strip all whitespace before decoding — YAML multi-line values can embed
+          # spaces/newlines that silently corrupt the decoded binary, causing
+          # "Failed to read key ... : null" at signing time.
+          echo "$CM_KEYSTORE" | tr -d ' \n\r\t' | base64 --decode > "$KEYSTORE_PATH"
           echo "CM_KEYSTORE_PATH=$KEYSTORE_PATH" >> $CM_ENV
+          # Verify the keystore decoded correctly before proceeding
+          keytool -list -keystore "$KEYSTORE_PATH" \
+            -storepass "$CM_KEYSTORE_PASSWORD" \
+            -alias "$CM_KEY_ALIAS" \
+            -noprompt && echo "Keystore verified OK" || (echo "ERROR: keystore verification failed" && exit 1)
 
       - name: Build signed AAB
         script: |
