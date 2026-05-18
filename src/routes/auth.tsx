@@ -51,7 +51,6 @@ function AuthPage() {
           email: email.trim(),
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/app`,
             data: { full_name: name.trim() },
           },
         });

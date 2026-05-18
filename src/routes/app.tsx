@@ -14,10 +14,11 @@ export const Route = createFileRoute("/app")({
 });
 
 function AppLayout() {
+  const navigate = useNavigate();
   const [ready, setReady] = useState(false);
   useEffect(() => {
     const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
-      if (!session) window.location.assign("/auth?mode=signin");
+      if (!session) navigate({ to: "/auth", search: { mode: "signin" } });
     });
     setReady(true);
     return () => sub.subscription.unsubscribe();
