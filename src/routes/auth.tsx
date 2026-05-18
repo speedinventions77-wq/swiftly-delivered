@@ -128,8 +128,9 @@ function Field({ label, value, onChange, type = "text", placeholder, required, a
         placeholder={placeholder}
         autoComplete={autoComplete ?? (type === "password" ? "current-password" : "on")}
         autoCorrect="off"
-        autoCapitalize={type === "email" ? "none" : "words"}
+        autoCapitalize={type === "email" || type === "password" ? "none" : "words"}
         spellCheck={false}
+        inputMode={type === "email" ? "email" : undefined}
         onChange={(e) => onChange(e.target.value)}
         className="w-full rounded-xl border border-input bg-card px-4 py-3.5 text-base outline-none ring-ring focus:ring-2"
       />
