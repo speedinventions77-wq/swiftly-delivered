@@ -1,53 +1,94 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { Logo } from "@/components/Logo";
-import { ArrowLeft, Wrench } from "lucide-react";
-import { z } from "zod";
+import { ArrowLeft } from "lucide-react";
 
 const searchSchema = z.object({
   mode: z.enum(["signin", "signup"]).catch("signin"),
 });
+
+const signInSchema = z.object({
+  email: z.string().email("Enter a valid email"),
+  password: z.string().min(1, "Enter your password"),
+});
+
+const signUpSchema = z.object({
+  name: z.string().min(1, "Enter your full name"),
+  email: z.string().email("Enter a valid email"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+});
+
+type SignInValues = z.infer<typeof signInSchema>;
+type SignUpValues = z.infer<typeof signUpSchema>;
 
 export const Route = createFileRoute("/auth")({
   validateSearch: searchSchema,
   component: AuthPage,
 });
 
-function GoogleIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M43.611 20.083H42V20H24v8h11.303C33.654 32.657 29.332 36 24 36c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z" fill="#FFC107"/>
-      <path d="M6.306 14.691l6.571 4.819C14.655 16.108 19.001 13 24 13c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z" fill="#FF3D00"/>
-      <path d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238A11.91 11.91 0 0124 36c-5.312 0-9.624-3.417-11.285-8.137l-6.522 5.025C9.505 39.556 16.227 44 24 44z" fill="#4CAF50"/>
-      <path d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 01-4.087 5.571l.003-.002 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z" fill="#1976D2"/>
-    </svg>
-  );
+function friendlyError(err: any): string {
+  const msg = String(err?.message ?? err ?? "");
+  const code = err?.code || err?.error_code;
+  if (code === "weak_password" || /pwned|known to be weak|easy to guess/i.test(msg))
+    return "That password has been seen in a data breach. Please choose a stronger one.";
+  if (code === "user_already_exists" || /already registered|already exists/i.test(msg))
+    return "An account with that email already exists. Try signing in instead.";
+  if (/invalid login credentials/i.test(msg)) return "Wrong email or password.";
+  if (/email not confirmed/i.test(msg)) return "Please confirm your email first — check your inbox.";
+  if (/password should be at least/i.test(msg)) return msg;
+  if (/rate limit|too many/i.test(msg)) return "Too many attempts. Please wait a moment and try again.";
+  return msg || "Authentication failed";
 }
 
 function AuthPage() {
   const { mode } = Route.useSearch();
   const navigate = useNavigate();
-  const [googleLoading, setGoogleLoading] = useState(false);
-  const [googleError, setGoogleError] = useState<string | null>(null);
+  const [serverError, setServerError] = useState<string | null>(null);
 
-  async function signInWithGoogle() {
-    setGoogleError(null);
-    setGoogleLoading(true);
+  const signInForm = useForm<SignInValues>({
+    resolver: zodResolver(signInSchema),
+    defaultValues: { email: "", password: "" },
+  });
+
+  const signUpForm = useForm<SignUpValues>({
+    resolver: zodResolver(signUpSchema),
+    defaultValues: { name: "", email: "", password: "" },
+  });
+
+  async function onSignIn(values: SignInValues) {
+    setServerError(null);
     try {
-      const redirectTo = typeof window !== "undefined"
-        ? `${window.location.origin}/app`
-        : undefined;
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: { redirectTo },
+      const { error } = await supabase.auth.signInWithPassword({
+        email: values.email.trim(),
+        password: values.password,
       });
       if (error) throw error;
+      navigate({ to: "/app" });
     } catch (err: any) {
-      setGoogleError(err?.message || "Google sign-in failed. Please try again.");
-      setGoogleLoading(false);
+      setServerError(friendlyError(err));
     }
   }
+
+  async function onSignUp(values: SignUpValues) {
+    setServerError(null);
+    try {
+      const { error } = await supabase.auth.signUp({
+        email: values.email.trim(),
+        password: values.password,
+        options: { data: { full_name: values.name.trim() } },
+      });
+      if (error) throw error;
+      navigate({ to: "/app" });
+    } catch (err: any) {
+      setServerError(friendlyError(err));
+    }
+  }
+
+  const isSignIn = mode === "signin";
 
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-md flex-col bg-background px-5 safe-top">
@@ -61,72 +102,95 @@ function AuthPage() {
 
       <div className="mt-4">
         <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
-          {mode === "signup" ? "Create account" : "Welcome back"}
+          {isSignIn ? "Welcome back" : "Create account"}
         </p>
         <h1 className="mt-2 text-3xl font-bold leading-tight">
-          {mode === "signup" ? "Get anything delivered" : "Sign in to Shofast"}
+          {isSignIn ? "Sign in to Shofast" : "Get anything delivered"}
         </h1>
       </div>
 
-      <div className="mt-8 space-y-4">
-        {googleError && (
-          <p className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">{googleError}</p>
-        )}
-
-        <button
-          onClick={signInWithGoogle}
-          disabled={googleLoading}
-          className="flex w-full items-center justify-center gap-3 rounded-full border border-border bg-card py-3.5 text-sm font-semibold shadow-sm active:scale-[0.99] disabled:opacity-60"
-        >
-          <GoogleIcon />
-          {googleLoading ? "Connecting…" : "Continue with Google"}
-        </button>
-
-        <div className="relative flex items-center gap-3 py-1">
-          <div className="h-px flex-1 bg-border" />
-          <span className="text-xs text-muted-foreground">or</span>
-          <div className="h-px flex-1 bg-border" />
-        </div>
-
-        <div className="rounded-2xl border border-border bg-secondary/40 px-4 py-5">
-          <div className="mb-3 flex items-center gap-2 text-muted-foreground">
-            <Wrench className="h-4 w-4 shrink-0" />
-            <span className="text-xs font-semibold uppercase tracking-widest">Under Maintenance</span>
-          </div>
-          <p className="text-sm text-muted-foreground">
-            Email &amp; password sign-in is temporarily unavailable. Please use Google to sign in for now.
+      {isSignIn ? (
+        <form onSubmit={signInForm.handleSubmit(onSignIn)} className="mt-8 space-y-3" noValidate>
+          <FormField
+            label="Email"
+            type="email"
+            placeholder="you@example.com"
+            autoComplete="email"
+            inputMode="email"
+            registration={signInForm.register("email")}
+            error={signInForm.formState.errors.email?.message}
+          />
+          <FormField
+            label="Password"
+            type="password"
+            placeholder="Your password"
+            autoComplete="current-password"
+            registration={signInForm.register("password")}
+            error={signInForm.formState.errors.password?.message}
+          />
+          {serverError && (
+            <p className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">{serverError}</p>
+          )}
+          <button
+            type="submit"
+            disabled={signInForm.formState.isSubmitting}
+            className="mt-4 w-full rounded-full bg-primary py-3.5 text-sm font-semibold text-primary-foreground active:scale-[0.99] disabled:opacity-60"
+          >
+            {signInForm.formState.isSubmitting ? "Signing in…" : "Sign in"}
+          </button>
+        </form>
+      ) : (
+        <form onSubmit={signUpForm.handleSubmit(onSignUp)} className="mt-8 space-y-3" noValidate>
+          <FormField
+            label="Full name"
+            type="text"
+            placeholder="Ada Lovelace"
+            autoComplete="name"
+            autoCapitalize="words"
+            registration={signUpForm.register("name")}
+            error={signUpForm.formState.errors.name?.message}
+          />
+          <FormField
+            label="Email"
+            type="email"
+            placeholder="you@example.com"
+            autoComplete="email"
+            inputMode="email"
+            registration={signUpForm.register("email")}
+            error={signUpForm.formState.errors.email?.message}
+          />
+          <FormField
+            label="Password"
+            type="password"
+            placeholder="At least 8 characters"
+            autoComplete="new-password"
+            registration={signUpForm.register("password")}
+            error={signUpForm.formState.errors.password?.message}
+          />
+          <p className="text-[11px] text-muted-foreground">
+            Use 8+ characters with a mix of letters, numbers &amp; symbols.
           </p>
-
-          <div className="mt-4 space-y-3 opacity-40 pointer-events-none select-none">
-            {mode === "signup" && (
-              <div>
-                <span className="mb-1.5 block text-xs font-medium text-muted-foreground">Full name</span>
-                <input disabled placeholder="Ada Lovelace" className="w-full rounded-xl border border-input bg-card px-4 py-3.5 text-base outline-none cursor-not-allowed" />
-              </div>
-            )}
-            <div>
-              <span className="mb-1.5 block text-xs font-medium text-muted-foreground">Email</span>
-              <input disabled type="email" placeholder="you@example.com" className="w-full rounded-xl border border-input bg-card px-4 py-3.5 text-base outline-none cursor-not-allowed" />
-            </div>
-            <div>
-              <span className="mb-1.5 block text-xs font-medium text-muted-foreground">Password</span>
-              <input disabled type="password" placeholder="At least 8 characters" className="w-full rounded-xl border border-input bg-card px-4 py-3.5 text-base outline-none cursor-not-allowed" />
-            </div>
-            <button disabled className="w-full rounded-full bg-primary py-3.5 text-sm font-semibold text-primary-foreground opacity-60 cursor-not-allowed">
-              {mode === "signup" ? "Create account" : "Sign in"}
-            </button>
-          </div>
-        </div>
-      </div>
+          {serverError && (
+            <p className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">{serverError}</p>
+          )}
+          <button
+            type="submit"
+            disabled={signUpForm.formState.isSubmitting}
+            className="mt-4 w-full rounded-full bg-primary py-3.5 text-sm font-semibold text-primary-foreground active:scale-[0.99] disabled:opacity-60"
+          >
+            {signUpForm.formState.isSubmitting ? "Creating account…" : "Create account"}
+          </button>
+        </form>
+      )}
 
       <p className="mt-6 text-center text-sm text-muted-foreground">
-        {mode === "signup" ? "Already on Shofast?" : "New to Shofast?"}{" "}
+        {isSignIn ? "New to Shofast?" : "Already on Shofast?"}{" "}
         <Link
           to="/auth"
-          search={{ mode: mode === "signup" ? "signin" : "signup" }}
+          search={{ mode: isSignIn ? "signup" : "signin" }}
           className="font-semibold text-foreground underline-offset-4 hover:underline"
         >
-          {mode === "signup" ? "Sign in" : "Create account"}
+          {isSignIn ? "Create account" : "Sign in"}
         </Link>
       </p>
 
@@ -134,5 +198,45 @@ function AuthPage() {
         By continuing you agree to our Terms &amp; Privacy.
       </p>
     </div>
+  );
+}
+
+function FormField({
+  label,
+  type,
+  placeholder,
+  autoComplete,
+  autoCapitalize,
+  inputMode,
+  registration,
+  error,
+}: {
+  label: string;
+  type: string;
+  placeholder?: string;
+  autoComplete?: string;
+  autoCapitalize?: string;
+  inputMode?: React.InputHTMLAttributes<HTMLInputElement>["inputMode"];
+  registration: ReturnType<ReturnType<typeof useForm>["register"]>;
+  error?: string;
+}) {
+  return (
+    <label className="block">
+      <span className="mb-1.5 block text-xs font-medium text-muted-foreground">{label}</span>
+      <input
+        {...registration}
+        type={type}
+        placeholder={placeholder}
+        autoComplete={autoComplete}
+        autoCapitalize={autoCapitalize ?? "off"}
+        autoCorrect="off"
+        spellCheck={false}
+        inputMode={inputMode}
+        className={`w-full rounded-xl border px-4 py-3.5 text-base outline-none ring-ring focus:ring-2 ${
+          error ? "border-destructive bg-destructive/5" : "border-input bg-card"
+        }`}
+      />
+      {error && <p className="mt-1 text-xs text-destructive">{error}</p>}
+    </label>
   );
 }
