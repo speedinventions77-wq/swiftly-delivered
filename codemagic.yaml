@@ -10,7 +10,7 @@ workflows:
 
       vars:
         PACKAGE_NAME: "app.shofast.customers"
-        ANDROID_COMPILE_SDK: "34"
+        ANDROID_COMPILE_SDK: "35"
 
         # ── Signing credentials — all embedded, no dashboard setup required ──
         CM_KEY_ALIAS: "shofast-customers"
@@ -33,14 +33,15 @@ workflows:
 
     # ─── Scripts ──────────────────────────────────────────────────────────────
     scripts:
-      - name: Verify Android SDK 34
+      - name: Install Android SDK 35
         script: |
-          # SDK 34 is pre-installed and verified on CodeMagic — no custom download needed.
-          # Write local.properties pointing to the system SDK so Gradle finds it.
+          # Use sdkmanager to install SDK 35 properly — this downloads with checksums
+          # and installs into the existing ANDROID_HOME, avoiding the corrupted
+          # android.jar that the old Python download script produced.
+          SDKMANAGER=$(find "$ANDROID_HOME/cmdline-tools" -name sdkmanager -type f 2>/dev/null | head -1)
+          yes | "$SDKMANAGER" "platforms;android-35" 2>&1 | tail -5
+          du -h "$ANDROID_HOME/platforms/android-35/android.jar" && echo "android.jar OK" || (echo "ERROR: android-35 not found" && exit 1)
           echo "sdk.dir=$ANDROID_HOME" > android/local.properties
-          echo "Android SDK location: $ANDROID_HOME"
-          ls "$ANDROID_HOME/platforms/" | grep android-34 && echo "android-34 found OK" || (echo "ERROR: android-34 not found" && exit 1)
-          du -h "$ANDROID_HOME/platforms/android-34/android.jar" && echo "android.jar OK"
 
       - name: Install Node dependencies
         script: |
