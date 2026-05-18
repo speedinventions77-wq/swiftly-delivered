@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -46,7 +46,6 @@ function friendlyError(err: any): string {
 
 function AuthPage() {
   const { mode } = Route.useSearch();
-  const navigate = useNavigate();
   const [serverError, setServerError] = useState<string | null>(null);
 
   const signInForm = useForm<SignInValues>({
@@ -67,7 +66,7 @@ function AuthPage() {
         password: values.password,
       });
       if (error) throw error;
-      navigate({ to: "/app" });
+      window.location.replace("/app");
     } catch (err: any) {
       setServerError(friendlyError(err));
     }
@@ -82,7 +81,7 @@ function AuthPage() {
         options: { data: { full_name: values.name.trim() } },
       });
       if (error) throw error;
-      navigate({ to: "/app" });
+      window.location.replace("/app");
     } catch (err: any) {
       setServerError(friendlyError(err));
     }
